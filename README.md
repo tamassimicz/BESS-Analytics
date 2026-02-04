@@ -1,7 +1,7 @@
 # BESS-Analytics 🔋
 
-**BESS-Analytics** is an open-source, browser-based battery energy storage system (BESS) sizing and simulation tool.  
-A **BESS-Analytics** egy nyílt forráskódú, böngészőben futó akkumulátoros energiatároló (BESS) méretező és szimulációs eszköz.
+- ENG: **BESS-Analytics** is an open-source, browser-based battery energy storage system (BESS) sizing and simulation tool.  
+- HU: A **BESS-Analytics** egy nyílt forráskódú, böngészőben futó akkumulátoros energiatároló (BESS) méretező és szimulációs eszköz.
 
 ---
 

@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BESS Analytics - Data Import</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>BESS Analytics</h1>
+        
+        <div class="import-section">
+            <div style="margin-bottom: 20px;">
+                <label><strong>1. Solar Generation Data (PV):</strong></label><br>
+                <input type="file" id="solarInput" accept=".csv">
+            </div>
+            
+            <div style="margin-bottom: 20px;">
+                <label><strong>2. Grid Meter Data (Import/Export):</strong></label><br>
+                <input type="file" id="gridInput" accept=".csv">
+            </div>
+        </div>
+
+        <div id="datePickerSection" style="margin-top: 25px; display: none; padding: 15px; border: 1px solid #ccc;">
+            <h3>Simulation Period</h3>
+            <p>Select the start and end dates for your analysis:</p>
+            <label>Start:</label>
+            <input type="datetime-local" id="startDate">
+            <label>End:</label>
+            <input type="datetime-local" id="endDate">
+            <br><br>
+            <button id="runSimulation">Update Visualization</button>
+        </div>
+
+        <script src="https://cdn.plot.ly/plotly-2.27.0.min.js"></script>
+
+        <div id="chartContainer" style="margin-top: 30px; height: 600px; width: 100%; display:none;"></div>
+
+        <div id="output" style="margin-top: 20px; white-space: pre-wrap; font-family: monospace; font-size: 12px; background: #f4f4f4; padding: 10px;">
+            Waiting for files...
+        </div>
+    </div>
+
+    <script src="js/csv_handler.js"></script>
+    <script src="js/data_merger.js"></script>
+    <script src="js/visualizer.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>
