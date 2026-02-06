@@ -8,7 +8,10 @@
 </head>
 <body>
     <div class="container">
-        <h1>BESS Analytics - Capacity Optimizer</h1>
+        <div class="header-container">
+            <h1>BESS Analytics - Capacity Optimizer</h1>
+            <button id="helpButton" class="help-btn" title="How to Use">❓ Help</button>
+        </div>
         
         <div class="import-section">
             <div style="margin-bottom: 20px;">
@@ -230,10 +233,1007 @@
         <p id="version-info"></p>
     </footer>
 
+    <!-- Help Modal -->
+    <div id="helpModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="helpModalTitle">How to Use</h2>
+                <div class="language-toggle">
+                    <button class="lang-btn active" data-lang="en">EN</button>
+                    <button class="lang-btn" data-lang="hu">HU</button>
+                </div>
+                <button class="modal-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <!-- Tab Navigation -->
+                <div class="help-tabs">
+                    <button class="tab-btn active" data-section="getting-started">
+                        <span class="tab-text-en">Getting Started</span>
+                        <span class="tab-text-hu" style="display:none;">Első lépések</span>
+                    </button>
+                    <button class="tab-btn" data-section="time-range">
+                        <span class="tab-text-en">Time Range</span>
+                        <span class="tab-text-hu" style="display:none;">Időszak</span>
+                    </button>
+                    <button class="tab-btn" data-section="battery-config">
+                        <span class="tab-text-en">Battery Setup</span>
+                        <span class="tab-text-hu" style="display:none;">Beállítások</span>
+                    </button>
+                    <button class="tab-btn" data-section="simulation">
+                        <span class="tab-text-en">Simulation</span>
+                        <span class="tab-text-hu" style="display:none;">Szimuláció</span>
+                    </button>
+                    <button class="tab-btn" data-section="concepts">
+                        <span class="tab-text-en">Key Concepts</span>
+                        <span class="tab-text-hu" style="display:none;">Fogalmak</span>
+                    </button>
+                    <button class="tab-btn" data-section="troubleshoot">
+                        <span class="tab-text-en">Help</span>
+                        <span class="tab-text-hu" style="display:none;">Segítség</span>
+                    </button>
+                </div>
+                
+                <!-- Content Sections -->
+                <div class="help-content">
+                    <!-- Section 1: Getting Started -->
+                    <div id="section-getting-started" class="help-section active">
+                        <div class="lang-en">
+                            <h3>📁 Loading Your Data</h3>
+                            <div class="help-steps">
+                                <div class="help-step">
+                                    <div class="step-number">1</div>
+                                    <div class="step-content">
+                                        <h4>Solar Generation Data</h4>
+                                        <p>Click <strong>"1. Solar Generation Data"</strong> and select your PV production CSV file.</p>
+                                        <div class="info-box">
+                                            <strong>Required format:</strong>
+                                            <ul>
+                                                <li>2 columns: <code>Timestamp, Production (kW)</code></li>
+                                                <li>15-minute intervals</li>
+                                                <li>Flexible date formats accepted:
+                                                    <ul>
+                                                        <li><code>YYYY-MM-DD HH:mm</code> (e.g., 2024-10-01 14:30)</li>
+                                                        <li><code>M/D/YYYY H:mm</code> (e.g., 1/1/2024 0:15)</li>
+                                                        <li><code>YYYY.MM.DD. HH:mm</code> (e.g., 2024.10.01. 14:30)</li>
+                                                    </ul>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+      <div class="help-step">
+                                    <div class="step-number">2</div>
+                                    <div class="step-content">
+                                        <h4>Grid Meter Data</h4>
+                                        <p>Click <strong>"2. Grid Meter Data"</strong> and select your import/export CSV file.</p>
+                                        <div class="info-box">
+                                            <strong>Required format:</strong>
+                                            <ul>
+                                                <li>3 columns: <code>Timestamp, Import (kWh), Export (kWh)</code></li>
+                                                <li>15-minute energy intervals</li>
+                                                <li>Flexible date formats (can differ from solar file):
+                                                    <ul>
+                                                        <li><code>YYYY-MM-DD HH:mm</code></li>
+                                                        <li><code>M/D/YYYY H:mm</code></li>
+                                                        <li><code>YYYY.MM.DD. HH:mm</code></li>
+                                                    </ul>
+                                                </li>
+                                                <li>Note: Timestamps don't need to match solar format</li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <h3 style="margin-top: 30px;">📊 Try Demo Data</h3>
+                            <p>Not ready with your own data? No problem!</p>
+                            <ul>
+                                <li>Click <strong>"📊 Load Demo Scenarios"</strong> to test with pre-loaded sample data</li>
+                                <li>This loads realistic solar + grid data for testing</li>
+                                <li>Perfect for learning the interface before using your own data</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="lang-hu" style="display:none;">
+                            <h3>📁 Saját adatok betöltése</h3>
+                            <div class="help-steps">
+                                <div class="help-step">
+                                    <div class="step-number">1</div>
+                                    <div class="step-content">
+                                        <h4>Napelemes termelési adatok</h4>
+                                        <p>Kattints az <strong>"1. Solar Generation Data"</strong> gombra és válaszd ki a napelemes CSV fájlt.</p>
+                                        <div class="info-box">
+                                            <strong>Szükséges formátum:</strong>
+                                            <ul>
+                                                <li>2 oszlop: <code>Időbélyeg, Termelés (kW)</code></li>
+                                                <li>15 perces felbontás</li>
+                                                <li>Rugalmas dátum formátumok elfogadva:
+                                                    <ul>
+                                                        <li><code>ÉÉÉÉ-HH-NN ÓÓ:pp</code> (pl. 2024-10-01 14:30)</li>
+                                                        <li><code>H/N/ÉÉÉÉ Ó:pp</code> (pl. 1/1/2024 0:15)</li>
+                                                        <li><code>ÉÉÉÉ.HH.NN. ÓÓ:pp</code> (pl. 2024.10.01. 14:30)</li>
+                                                    </ul>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="help-step">
+                                    <div class="step-number">2</div>
+                                    <div class="step-content">
+                                        <h4>Hálózati mérő adatok</h4>
+                                        <p>Kattints a <strong>"2. Grid Meter Data"</strong> gombra és válaszd ki az import/export CSV fájlt.</p>
+                                        <div class="info-box">
+                                            <strong>Szükséges formátum:</strong>
+                                            <ul>
+                                                <li>3 oszlop: <code>Időbélyeg, Import (kWh), Export (kWh)</code></li>
+                                                <li>15 perces energia intervallumok</li>
+                                                <li>Rugalmas dátum formátumok (napelemes fájltól eltérhet):
+                                                    <ul>
+                                                        <li><code>ÉÉÉÉ-HH-NN ÓÓ:pp</code></li>
+                                                        <li><code>H/N/ÉÉÉÉ Ó:pp</code></li>
+                                                        <li><code>ÉÉÉÉ.HH.NN. ÓÓ:pp</code></li>
+                                                    </ul>
+                                                </li>
+                                                <li>Megjegyzés: Az időbélyegek formátuma nem kell egyezzen a napelemes fájléval</li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <h3 style="margin-top: 30px;">📊 Példa adatok kipróbálása</h3>
+                            <p>Még nincsenek saját adataid? Semmi gond!</p>
+                            <ul>
+                                <li>Kattints a <strong>"📊 Load Demo Scenarios"</strong> gombra minta adatok betöltéséhez</li>
+                                <li>Ez valósághű napelemes + hálózati adatokat tölt be teszteléshez</li>
+                                <li>Tökéletes a felület megismeréséhez saját adatok feltöltése előtt</li>
+                            </ul>
+                        </div>
+                    </div>
+                    
+                    <!-- Section 2: Time Range -->
+                    <div id="section-time-range" class="help-section" style="display:none;">
+                        <div class="lang-en">
+                            <h3>⏱️ Setting the Simulation Period</h3>
+                            
+                            <h4>Quick Selection Buttons</h4>
+                            <div class="button-showcase">
+                                <span class="demo-btn">Week</span>
+                                <span class="demo-btn">Month</span>
+                                <span class="demo-btn">Year</span>
+                                <span class="demo-btn">Full Range</span>
+                            </div>
+                            <ul>
+                                <li><strong>Week:</strong> Last 7 days of loaded data</li>
+                                <li><strong>Month:</strong> Last 30 days</li>
+                                <li><strong>Year:</strong> Last 365 days</li>
+                                <li><strong>Full:</strong> Entire dataset</li>
+                            </ul>
+                            
+                            <h4>Navigation Arrows (← →)</h4>
+                            <ul>
+                                <li>Use <strong>arrow buttons</strong> to move forward/backward by the selected interval</li>
+                                <li>Example: If "Week" is selected, arrows jump by 7 days</li>
+                            </ul>
+                            
+                            <div class="info-box">
+                                <strong>ℹ️ Demo Data Info:</strong> In the demo dataset, only <strong>year 2025</strong> contains complete data for both solar and grid meter files.
+                            </div>
+                            
+                            <h4 style="margin-top: 30px;">Custom Date Range</h4>
+                            <div class="help-steps">
+                                <div class="help-step">
+                                    <div class="step-number">1</div>
+                                    <div class="step-content">
+                                        <p>Click the <strong>Start Date</strong> picker and select your desired start date and time</p>
+                                    </div>
+                                </div>
+                                <div class="help-step">
+                                    <div class="step-number">2</div>
+                                    <div class="step-content">
+                                        <p>Click the <strong>End Date</strong> picker and select your desired end date and time</p>
+                                    </div>
+                                </div>
+                                <div class="help-step">
+                                    <div class="step-number">3</div>
+                                    <div class="step-content">
+                                        <p>Click the <strong>"Apply Range for Simulation"</strong> button to update all charts and prepare for simulation</p>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="warning-box">
+                                <strong>⚠️ Important:</strong> The simulation period affects:
+                                <ul>
+                                    <li>All visualizations and charts</li>
+                                    <li>Battery simulation calculations</li>
+                                    <li>Self-consumption statistics</li>
+                                    <li>Cost and savings calculations</li>
+                                </ul>
+                            </div>
+                        </div>
+                        
+                        <div class="lang-hu" style="display:none;">
+                            <h3>⏱️ Szimulációs időszak beállítása</h3>
+                            
+                            <h4>Gyorsválasztó gombok</h4>
+                            <div class="button-showcase">
+                                <span class="demo-btn">Week</span>
+                                <span class="demo-btn">Month</span>
+                                <span class="demo-btn">Year</span>
+                                <span class="demo-btn">Full Range</span>
+                            </div>
+                            <ul>
+                                <li><strong>Week (Hét):</strong> Utolsó 7 nap a betöltött adatokból</li>
+                                <li><strong>Month (Hónap):</strong> Utolsó 30 nap</li>
+                                <li><strong>Year (Év):</strong> Utolsó 365 nap</li>
+                                <li><strong>Full (Teljes):</strong> Teljes adathalmaz</li>
+                            </ul>
+                            
+                            <h4>Navigációs nyilak (← →)</h4>
+                            <ul>
+                                <li>Használd a <strong>nyíl gombokat</strong> előre/hátra lépéshez a kiválasztott intervallum szerint</li>
+                                <li>Példa: Ha "Week" van kiválasztva, a nyilak 7 nappal lépnek</li>
+                            </ul>
+                            
+                            <div class="info-box">
+                                <strong>ℹ️ Demo adatok info:</strong> A demo adathalmazban csak a <strong>2025-ös év</strong> tartalmaz teljes adatokat mind a napelemes, mind a hálózati mérő fájlokban.
+                            </div>
+                            
+                            <h4 style="margin-top: 30px;">Egyéni időszak beállítása</h4>
+                            <div class="help-steps">
+                                <div class="help-step">
+                                    <div class="step-number">1</div>
+                                    <div class="step-content">
+                                        <p>Kattints a <strong>Start Date</strong> választóra és válaszd ki a kezdő dátumot és időpontot</p>
+                                    </div>
+                                </div>
+                                <div class="help-step">
+                                    <div class="step-number">2</div>
+                                    <div class="step-content">
+                                        <p>Kattints az <strong>End Date</strong> választóra és válaszd ki a befejező dátumot és időpontot</p>
+                                    </div>
+                                </div>
+                                <div class="help-step">
+                                    <div class="step-number">3</div>
+                                    <div class="step-content">
+                                        <p>Kattints az <strong>"Apply Range for Simulation"</strong> gombra a grafikonok frissítéséhez és a szimuláció előkészítéséhez</p>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="warning-box">
+                                <strong>⚠️ Fontos:</strong> A szimulációs időszak befolyásolja:
+                                <ul>
+                                    <li>Minden vizualizációt és grafikont</li>
+                                    <li>Akkumulátor szimulációs számításokat</li>
+                                    <li>Önfogyasztási statisztikákat</li>
+                                    <li>Költség és megtakarítás számításokat</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Section 3: Battery Configuration -->
+                    <div id="section-battery-config" class="help-section" style="display:none;">
+                        <div class="lang-en">
+                            <h3>🔋 Battery Parameters</h3>
+                            
+                            <div class="param-explain">
+                                <h4>Capacity (kWh)</h4>
+                                <p>Total energy storage capacity of the battery system.</p>
+                                <ul>
+                                    <li><strong>Typical residential:</strong> 5-15 kWh</li>
+                                    <li><strong>Commercial:</strong> 20-100+ kWh</li>
+                                </ul>
+                            </div>
+                            
+                            <div class="param-explain">
+                                <h4>Charge/Discharge Efficiency (%)</h4>
+                                <p>Energy losses during charging and discharging processes.</p>
+                                <ul>
+                                    <li><strong>Typical values:</strong> 90-96% per direction</li>
+                                    <li><strong>Round-trip efficiency:</strong> Charge × Discharge (e.g., 96% × 92% = 88.3%)</li>
+                                    <li>Higher is better (less energy loss)</li>
+                                </ul>
+                            </div>
+                            
+                            <div class="param-explain">
+                                <h4>Max Charge/Discharge Power (kW)</h4>
+                                <p>Maximum rate at which the battery can charge or discharge.</p>
+                                <ul>
+                                    <li><strong>Max Charge:</strong> Limits how fast battery can charge from solar surplus</li>
+                                    <li><strong>Max Discharge:</strong> Limits how fast battery can supply power to loads</li>
+                                    <li>Typical C-rates: 0.5C to 1C (e.g., 10 kWh battery: 5-10 kW)</li>
+                                </ul>
+                            </div>
+                            
+                            <div class="param-explain">
+                                <h4>SOC Limits (Min/Max %)</h4>
+                                <p>Operating range boundaries to protect battery health.</p>
+                                <ul>
+                                    <li><strong>Min SOC:</strong> Minimum allowed state of charge (typical: 10-20%)</li>
+                                    <li><strong>Max SOC:</strong> Maximum allowed state of charge (typical: 85-95%)</li>
+                                    <li><strong>Purpose:</strong> Extends battery lifespan and prevents damage</li>
+                                </ul>
+                            </div>
+                            
+ <div class="param-explain">
+                                <h4>Inverter Mode</h4>
+                                <p>How the system handles simultaneous import and export.</p>
+                                <ul>
+                                    <li><strong>Asymmetric (Net Metering):</strong> Recommended for most systems, modern hybrid inverters</li>
+                                    <li><strong>Symmetric:</strong> For separate import/export pricing, modeling older inverters</li>
+                                    <li>See <em>"Key Concepts"</em> tab for detailed explanation</li>
+                                </ul>
+                            </div>
+                        </div>
+                        
+                        <div class="lang-hu" style="display:none;">
+                            <h3>🔋 Akkumulátor paraméterek</h3>
+                            
+                            <div class="param-explain">
+                                <h4>Kapacitás (kWh)</h4>
+                                <p>Az akkumulátor rendszer teljes energiatárolási kapacitása.</p>
+                                <ul>
+                                    <li><strong>Tipikus háztartási:</strong> 5-15 kWh</li>
+                                    <li><strong>Kereskedelmi:</strong> 20-100+ kWh</li>
+                                </ul>
+                            </div>
+                            
+                            <div class="param-explain">
+                                <h4>Töltési/Kisütési hatékonyság (%)</h4>
+                                <p>Energia veszteség a töltési és kisütési folyamatok során.</p>
+                                <ul>
+                                    <li><strong>Tipikus értékek:</strong> 90-96% irányanként</li>
+                                    <li><strong>Körfolyamat hatékonyság:</strong> Töltés × Kisütés (pl. 96% × 92% = 88,3%)</li>
+                                    <li>Magasabb jobb (kevesebb veszteség)</li>
+                                </ul>
+                            </div>
+                            
+                            <div class="param-explain">
+                                <h4>Max töltési/kisütési teljesítmény (kW)</h4>
+                                <p>Maximális sebesség, amellyel az akkumulátor tölthet vagy merülhet.</p>
+                                <ul>
+                                    <li><strong>Max töltés:</strong> Korlátozza, milyen gyorsan tölthető a napelem többletből</li>
+                                    <li><strong>Max kisütés:</strong> Korlátozza, milyen gyorsan adhat energiát a fogyasztóknak</li>
+                                    <li>Tipikus C-ráta: 0,5C - 1C (pl. 10 kWh: 5-10 kW)</li>
+                                </ul>
+                            </div>
+                            
+                            <div class="param-explain">
+                                <h4>SOC korlátok (Min/Max %)</h4>
+                                <p>Működési tartomány határai az akkumulátor védelme érdekében.</p>
+                                <ul>
+                                    <li><strong>Min SOC:</strong> Minimálisan megengedett töltöttség (tipikus: 10-20%)</li>
+                                    <li><strong>Max SOC:</strong> Maximálisan megengedett töltöttség (tipikus: 85-95%)</li>
+                                    <li><strong>Cél:</strong> Növeli az élettartamot és véd a károsodástól</li>
+                                </ul>
+                            </div>
+                            
+                            <div class="param-explain">
+                                <h4>Inverter mód</h4>
+                                <p>Hogyan kezeli a rendszer az egyidejű import és export folyamatokat.</p>
+                                <ul>
+                                    <li><strong>Aszimmetrikus (Nettó elszámolás):</strong> Ajánlott legtöbb rendszerhez, az újabb hibrid inverterek</li>
+                                    <li><strong>Szimmetrikus:</strong> Külön import/export árazáshoz, régebbi inverterek modellezéséhez</li>
+                                    <li>Lásd <em>"Fogalmak"</em> fület részletes magyarázatért</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Section 4: Running Simulation -->
+                    <div id="section-simulation" class="help-section" style="display:none;">
+                        <div class="lang-en">
+                            <h3>⚙️ Execute Battery Simulation</h3>
+                            
+                            <div class="help-steps">
+                                <div class="help-step">
+                                    <div class="step-number">1</div>
+                                    <div class="step-content">
+                                        <h4>Configure Parameters</h4>
+                                        <p>Set all battery parameters in the Battery Configuration section (see previous tab)</p>
+                                    </div>
+                                </div>
+                                
+                                <div class="help-step">
+                                    <div class="step-number">2</div>
+                                    <div class="step-content">
+                                        <h4>Run Simulation</h4>
+                                        <p>Click the <strong>"Run Battery Simulation"</strong> button</p>
+                                        <p><em>Large datasets may take 5-10 seconds to calculate</em></p>
+                                    </div>
+                                </div>
+                                
+                                <div class="help-step">
+                                    <div class="step-number">3</div>
+                                    <div class="step-content">
+                                        <h4>Review Results</h4>
+                                        <p>Results appear in multiple places:</p>
+                                        <ul>
+                                            <li>KPI cards at the top showing key metrics</li>
+                                            <li>Updated timeline charts with battery behavior</li>
+                                            <li>Detailed statistics and comparisons</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <h3 style="margin-top: 40px;">📊 Understanding the Results</h3>
+                            
+                            <div class="kpi-explain">
+                                <h4>Grid Import Reduction</h4>
+                                <p>How much the battery reduces energy purchased from the grid.</p>
+                                <ul>
+                                    <li>Measured in kWh and as a percentage</li>
+                                    <li>Higher values = better grid independence</li>
+                                </ul>
+                            </div>
+                            
+                            <div class="kpi-explain">
+                                <h4>Grid Export Reduction</h4>
+                                <p>How much solar energy the battery stores instead of exporting to the grid.</p>
+                                <ul>
+                                    <li>Important for net-metering scenarios</li>
+                                    <li>Stores excess solar for later use</li>
+                                </ul>
+                            </div>
+                            
+                            <div class="kpi-explain">
+                                <h4>Self-Consumption Improvement</h4>
+                                <p>Increase in on-site solar energy usage thanks to battery storage.</p>
+                                <ul>
+                                    <li>Shows before/after comparison</li>
+                                    <li>Higher self-consumption = better economics</li>
+                                </ul>
+                            </div>
+                            
+                            <div class="kpi-explain">
+                                <h4>Battery Losses</h4>
+                                <p>Energy lost due to charging/discharging inefficiencies.</p>
+                                <ul>
+                                    <li>Typical: 10-15% of energy cycled through battery</li>
+                                    <li>Lower efficiency batteries have higher losses</li>
+                                </ul>
+                            </div>
+                            
+                            <div class="kpi-explain">
+                                <h4>Cost Savings</h4>
+                                <p>Financial benefit of using battery storage.</p>
+                                <ul>
+                                    <li>Compares scenario with and without battery</li>
+                                    <li>Based on import/export electricity prices</li>
+                                    <li>Does not include battery investment cost</li>
+                                </ul>
+                            </div>
+                        </div>
+                        
+                        <div class="lang-hu" style="display:none;">
+                            <h3>⚙️ Akkumulátor szimuláció futtatása</h3>
+                            
+                            <div class="help-steps">
+                                <div class="help-step">
+                                    <div class="step-number">1</div>
+                                    <div class="step-content">
+                                        <h4>Paraméterek beállítása</h4>
+                                        <p>Állítsd be az akkumulátor paramétereket a Battery Configuration részben (előző fül)</p>
+                                    </div>
+                                </div>
+                                
+                                <div class="help-step">
+                                    <div class="step-number">2</div>
+                                    <div class="step-content">
+                                        <h4>Szimuláció indítása</h4>
+                                        <p>Kattints a <strong>"Run Battery Simulation"</strong> gombra</p>
+                                        <p><em>Nagy adathalmazok esetén 5-10 másodpercet vehet igénybe</em></p>
+                                    </div>
+                                </div>
+                                
+                                <div class="help-step">
+                                    <div class="step-number">3</div>
+                                    <div class="step-content">
+                                        <h4>Eredmények áttekintése</h4>
+                                        <p>Az eredmények több helyen jelennek meg:</p>
+                                        <ul>
+                                            <li>KPI kártyák felül a legfontosabb mérőszámokkal</li>
+                                            <li>Frissített idővonal grafikonok az akkumulátor viselkedésével</li>
+                                            <li>Részletes statisztikák és összehasonlítások</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <h3 style="margin-top: 40px;">📊 Eredmények értelmezése</h3>
+                            
+                            <div class="kpi-explain">
+                                <h4>Hálózati vásárlás csökkenés</h4>
+                                <p>Mennyivel csökkenti az akkumulátor a hálózatról vásárolt energiát.</p>
+                                <ul>
+                                    <li>kWh-ban és százalékban mérve</li>
+                                    <li>Magasabb érték = jobb hálózati függetlenség</li>
+                                </ul>
+                            </div>
+                            
+                            <div class="kpi-explain">
+                                <h4>Hálózati export csökkenés</h4>
+                                <p>Mennyi napelemes energiát tárol az akkumulátor hálózatba táplálás helyett.</p>
+                                <ul>
+                                    <li>Fontos nettó elszámolásos esetekben</li>
+                                    <li>Többlet napenergiát későbbi használatra tárolja</li>
+                                </ul>
+                            </div>
+                            
+                            <div class="kpi-explain">
+                                <h4>Önfogyasztás növekedés</h4>
+                                <p>Helyben használt napenergia növekedése az akkumulátor tárolásnak köszönhetően.</p>
+                                <ul>
+                                    <li>Előtte/utána összehasonlítást mutat</li>
+                                    <li>Magasabb önfogyasztás = jobb gazdaságosság</li>
+                                </ul>
+                            </div>
+                            
+                            <div class="kpi-explain">
+                                <h4>Akkumulátor veszteségek</h4>
+                                <p>Töltési/kisütési hatékonysági veszteségek miatt elveszett energia.</p>
+                                <ul>
+                                    <li>Tipikusan: 10-15% az akkumulátoron átfolyó energiából</li>
+                                    <li>Alacsonyabb hatékonyságú akkumulátorok nagyobb veszteséggel járnak</li>
+                                </ul>
+                            </div>
+                            
+                            <div class="kpi-explain">
+                                <h4>Költség megtakarítás</h4>
+                                <p>Akkumulátor használat pénzügyi előnye.</p>
+                                <ul>
+                                    <li>Összehasonlítja az akkumulátoros és akkumulátor nélküli forgatókönyvet</li>
+                                    <li>Import/export áramárak alapján</li>
+                                    <li>Nem tartalmazza az akkumulátor beruházási költségét</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Section 5: Key Concepts -->
+                    <div id="section-concepts" class="help-section" style="display:none;">
+                        <div class="lang-en">
+                            <h3>🔋 Inverter Mode: Symmetric vs Asymmetric</h3>
+                            
+                            <div class="concept-box concept-highlight">
+                                <h4>Asymmetric (Net Metering) - Default ✓</h4>
+                                <p>Simulates real net-metering scenarios where the system calculates net energy flow.</p>
+                                
+                                <strong>How it works:</strong>
+                                <ul>
+                                    <li>Calculates: <code>Net = Production - Consumption</code></li>
+                                    <li>Battery charges/discharges based on NET flow</li>
+                                    <li>If net is positive (surplus), battery charges</li>
+                                    <li>If net is negative (deficit), battery discharges</li>
+                                </ul>
+                                
+                                <div class="example-box">
+                                    <strong>Example:</strong><br>
+                                    • Solar produces 5 kW<br>
+                                    • Consumption is 3 kW<br>
+                                    • Net = +2 kW → Battery charges from 2 kW surplus
+                                </div>
+                                
+                                <strong>When to use:</strong>
+                                <ul>
+                                    <li>✓ Net-metering billing system</li>
+                                    <li>✓ Single meter for import/export</li>
+                                    <li>✓ Most common residential scenario</li>
+                                </ul>
+                            </div>
+                            
+                            <div class="concept-box">
+                                <h4>Symmetric (Separate Flows)</h4>
+                                <p>Treats grid import and export as completely independent flows.</p>
+                                
+                                <strong>How it works:</strong>
+                                <ul>
+                                    <li>Import and export tracked separately</li>
+                                    <li>Battery charges ONLY during export periods</li>
+                                    <li>Battery discharges ONLY during import periods</li>
+                                    <li>No net calculation - separate accounting</li>
+                                </ul>
+                                
+                                <strong>When to use:</strong>
+                                <ul>
+                                    <li>✓ Separate meters for import/export</li>
+                                    <li>✓ Different pricing for import vs export</li>
+                                    <li>✓ Commercial installations with complex tariffs</li>
+                                </ul>
+                            </div>
+                            
+                            <hr style="margin: 30px 0;">
+                            
+                            <h3>💰 Financial Terms</h3>
+                            
+                            <div class="term-definition">
+                                <h4>Self-Consumption</h4>
+                                <p>Solar energy used directly on-site without going through the grid or battery.</p>
+                                <ul>
+                                    <li>Most valuable use of solar energy</li>
+                                    <li>Saves money by avoiding grid import costs</li>
+                                    <li>Higher self-consumption = better economics</li>
+                                </ul>
+                            </div>
+                            
+                            <div class="term-definition">
+                                <h4>Grid Import</h4>
+                                <p>Energy purchased from the grid when solar production insufficient.</p>
+                                <ul>
+                                    <li>Costs money based on electricity rates</li>
+                                    <li>Battery helps reduce this by storing solar for later</li>
+                                </ul>
+                            </div>
+                            
+                            <div class="term-definition">
+                                <h4>Grid Export</h4>
+                                <p>Excess solar energy sent to the grid.</p>
+                                <ul>
+                                    <li>May receive credit (net-metering) or payment (feed-in tariff)</li>
+                                    <li>Often compensated at lower rate than import cost</li>
+                                    <li>Battery can store this instead of exporting</li>
+                                </ul>
+                            </div>
+                            
+                            <hr style="margin: 30px 0;">
+                            
+                            <h3>🔌 Technical Terms</h3>
+                            
+                            <div class="term-definition">
+                                <h4>SOC (State of Charge)</h4>
+                                <p>Battery fill level, expressed as percentage.</p>
+                                <ul>
+                                    <li>0% = completely empty</li>
+                                    <li>100% = completely full</li>
+                                    <li>Operating typically between 20-90% for longevity</li>
+                                </ul>
+                            </div>
+                            
+                            <div class="term-definition">
+                                <h4>Power (kW) vs Energy (kWh)</h4>
+                                <p>Two different but related concepts:</p>
+                                <ul>
+                                    <li><strong>Power (kW):</strong> Rate of energy flow - "speed"</li>
+                                    <li><strong>Energy (kWh):</strong> Total amount over time - "distance"</li>
+                                    <li><strong>Example:</strong> 10 kW for 2 hours = 20 kWh</li>
+                                </ul>
+                            </div>
+                            
+                            <div class="term-definition">
+                                <h4>Round-trip Efficiency</h4>
+                                <p>Total efficiency from charging to discharging.</p>
+                                <ul>
+                                    <li>Formula: Charge Efficiency × Discharge Efficiency</li>
+                                    <li>Example: 96% × 92% = 88.3% round-trip</li>
+                                    <li>Typical lithium batteries: 85-95%</li>
+                                </ul>
+                            </div>
+                        </div>
+                        
+                        <div class="lang-hu" style="display:none;">
+                            <h3>🔋 Inverter mód: Szimmetrikus vs Aszimmetrikus</h3>
+                            
+                            <div class="concept-box concept-highlight">
+                                <h4>Aszimmetrikus (Nettó elszámolás) - Alapértelmezett ✓</h4>
+                                <p>Valós nettó elszámolást szimulál, ahol a rendszer a nettó energia áramlást számítja.</p>
+                                
+                                <strong>Hogyan működik:</strong>
+                                <ul>
+                                    <li>Számítás: <code>Nettó = Termelés - Fogyasztás</code></li>
+                                    <li>Akkumulátor a NETTÓ áramlás alapján tölt/merül</li>
+                                    <li>Ha nettó pozitív (többlet), akkumulátor tölt</li>
+                                    <li>Ha nettó negatív (hiány), akkumulátor merül</li>
+                                </ul>
+                                
+                                <div class="example-box">
+                                    <strong>Példa:</strong><br>
+                                    • Napelem termel 5 kW-ot<br>
+                                    • Fogyasztás 3 kW<br>
+                                    • Nettó = +2 kW → Akkumulátor 2 kW többlettel tölt
+                                </div>
+                                
+                                <strong>Mikor használjuk:</strong>
+                                <ul>
+                                    <li>✓ Nettó elszámolás alapú számlázás</li>
+                                    <li>✓ Egyetlen mérő import/export-hoz</li>
+                                    <li>✓ Legtöbb lakossági eset</li>
+                                </ul>
+                            </div>
+                            
+                            <div class="concept-box">
+                                <h4>Szimmetrikus (Különálló áramlások)</h4>
+                                <p>A hálózati import és export teljesen független áramlásként kezeli.</p>
+                                
+                                <strong>Hogyan működik:</strong>
+                                <ul>
+                                    <li>Import és export külön követve</li>
+                                    <li>Akkumulátor CSAK export időszakokban tölt</li>
+                                    <li>Akkumulátor CSAK import időszakokban merül</li>
+                                    <li>Nincs nettó számítás - külön könyvelés</li>
+                                </ul>
+                                
+                                <strong>Mikor használjuk:</strong>
+                                <ul>
+                                    <li>✓ Külön mérők import/export-hoz</li>
+                                    <li>✓ Eltérő árazás import vs export</li>
+                                    <li>✓ Kereskedelmi telepítések komplex tarifákkal</li>
+                                </ul>
+                            </div>
+                            
+                            <hr style="margin: 30px 0;">
+                            
+                            <h3>💰 Pénzügyi fogalmak</h3>
+                            
+                            <div class="term-definition">
+                                <h4>Önfogyasztás</h4>
+                                <p>Napelemes energia közvetlenül helyben használva, hálózat vagy akkumulátor érintése nélkül.</p>
+                                <ul>
+                                    <li>Napenergia legértékesebb felhasználása</li>
+                                    <li>Pénzt takarít meg hálózati vásárlás elkerülésével</li>
+                                    <li>Magasabb önfogyasztás = jobb gazdaságosság</li>
+                                </ul>
+                            </div>
+                            
+                            <div class="term-definition">
+                                <h4>Hálózati vásárlás (Import)</h4>
+                                <p>Hálózatról vásárolt energia amikor a napelem termelés nem elegendő.</p>
+                                <ul>
+                                    <li>Költség az áramárfolyam alapján</li>
+                                    <li>Akkumulátor segít csökkenteni napenergia későbbi használattal</li>
+                                </ul>
+                            </div>
+                            
+                            <div class="term-definition">
+                                <h4>Hálózati export</h4>
+                                <p>Többlet napenergia hálózatba táplálva.</p>
+                                <ul>
+                                    <li>Kompenzáció nettó elszámolással vagy betáplálási díjjal</li>
+                                    <li>Gyakran alacsonyabb díjazás mint a vásárlási ár</li>
+                                    <li>Akkumulátor tárolhatja export helyett</li>
+                                </ul>
+                            </div>
+                            
+                            <hr style="margin: 30px 0;">
+                            
+                            <h3>🔌 Műszaki fogalmak</h3>
+                            
+                            <div class="term-definition">
+                                <h4>SOC (Töltöttségi állapot)</h4>
+                                <p>Akkumulátor telítettségi szint, százalékban kifejezve.</p>
+                                <ul>
+                                    <li>0% = teljesen üres</li>
+                                    <li>100% = teljesen teli</li>
+                                    <li>Működés tipikusan 20-90% között az élettartam érdekében</li>
+                                </ul>
+                            </div>
+                            
+                            <div class="term-definition">
+                                <h4>Teljesítmény (kW) vs Energia (kWh)</h4>
+                                <p>Két különböző, de kapcsolódó fogalom:</p>
+                                <ul>
+                                    <li><strong>Teljesítmény (kW):</strong> Energia áramlás sebessége - "sebesség"</li>
+                                    <li><strong>Energia (kWh):</strong> Összmennyiség időben - "távolság"</li>
+                                    <li><strong>Példa:</strong> 10 kW 2 órán át = 20 kWh</li>
+                                </ul>
+                            </div>
+                            
+                            <div class="term-definition">
+                                <h4>Körfolyamat hatékonyság</h4>
+                                <p>Teljes hatékonyság töltéstől a kisütésig.</p>
+                                <ul>
+                                    <li>Képlet: Töltési hatékonyság × Kisütési hatékonyság</li>
+                                    <li>Példa: 96% × 92% = 88,3% körfolyamat</li>
+                                    <li>Tipikus lítium akkumulátor: 85-95%</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Section 6: Troubleshooting -->
+                    <div id="section-troubleshoot" class="help-section" style="display:none;">
+                        <div class="lang-en">
+                            <h3>❓ Common Issues & Solutions</h3>
+                            
+                            <div class="troubleshoot-item">
+                                <h4>🔴 Data Not Loading</h4>
+                                <p><strong>Possible causes:</strong></p>
+                                <ul>
+                                    <li>Incorrect file format (must be CSV)</li>
+                                    <li>Wrong number of columns</li>
+                                    <li>Invalid timestamp format</li>
+                                    <li>Missing or corrupted data</li>
+                                </ul>
+                                <p><strong>Solutions:</strong></p>
+                                <ul>
+                                    <li>✓ Check file format: CSV with correct columns</li>
+                                    <li>✓ Verify timestamp format: <code>YYYY-MM-DD HH:mm</code></li>
+                                    <li>✓ Ensure 15-minute intervals throughout</li>
+                                    <li>✓ Check for missing values or gaps in data</li>
+                                    <li>✓ Try demo data to verify application is working</li>
+                                </ul>
+                            </div>
+                            
+                            <div class="troubleshoot-item">
+                                <h4>🔴 Charts Not Updating</h4>
+                                <p><strong>Solutions:</strong></p>
+                                <ul>
+                                    <li>✓ Click <strong>"Apply Range"</strong> after changing dates</li>
+                                    <li>✓ Run simulation after changing battery parameters</li>
+                                    <li>✓ Refresh browser if charts appear frozen (F5)</li>
+                                    <li>✓ Check browser console for errors (F12)</li>
+                                </ul>
+                            </div>
+                            
+                            <div class="troubleshoot-item">
+                                <h4>🔴 Simulation Taking Too Long</h4>
+                                <p><strong>This is normal for:</strong></p>
+                                <ul>
+                                    <li>Large datasets (>1 year may take 5-10 seconds)</li>
+                                    <li>First simulation after loading data</li>
+                                </ul>
+                                <p><strong>Solutions:</strong></p>
+                                <ul>
+                                    <li>✓ Reduce time range for faster calculation</li>
+                                    <li>✓ Be patient with large datasets</li>
+                                    <li>✓ Check browser console for errors (F12)</li>
+                                </ul>
+                            </div>
+                            
+                            <div class="troubleshoot-item">
+                                <h4>🔴 Unexpected or Unrealistic Results</h4>
+                                <p><strong>Check these settings:</strong></p>
+                                <ul>
+                                    <li>✓ Verify battery parameters are realistic</li>
+                                    <li>✓ Capacity must be > 0</li>
+                                    <li>✓ Efficiency values between 80-100%</li>
+                                    <li>✓ Min SOC < Max SOC</li>
+                                    <li>✓ Charge/discharge rates appropriate for battery size</li>
+                                    <li>✓ Try demo data to verify application working correctly</li>
+                                </ul>
+                            </div>
+                            
+                            <hr style="margin: 30px 0;">
+                            
+                            <h3>💻 Browser Compatibility</h3>
+                            <div class="browser-compat">
+                                <p><strong>Supported browsers:</strong></p>
+                                <ul>
+                                    <li>✅ Chrome (latest version)</li>
+                                    <li>✅ Firefox (latest version)</li>
+                                    <li>✅ Microsoft Edge (latest version)</li>
+                                    <li>✅ Safari 14+</li>
+                                    <li>❌ Internet Explorer (not supported)</li>
+                                </ul>
+                                <p><strong>Requirements:</strong></p>
+                                <ul>
+                                    <li>JavaScript must be enabled</li>
+                                    <li>Cookies/LocalStorage enabled (for preferences)</li>
+                                    <li>Modern browser with HTML5 support</li>
+                                </ul>
+                            </div>
+                            
+                            <hr style="margin: 30px 0;">
+                            
+                            <h3>📚 Need More Help?</h3>
+                            <p><em>Note: This is a hobby project. I'm not actively maintaining it as a developer, but you're welcome to explore and modify the code.</em></p>
+                            <ul>
+                                <li>📧 <strong>Documentation:</strong> Check README.md for detailed technical information</li>
+                                <li>🐛 <strong>Bug Reports:</strong> Submit issues on GitHub repository</li>
+                                <li>💡 <strong>Feature Requests:</strong> We welcome your suggestions!</li>
+                                <li>🔧 <strong>Development:</strong> Check implementation notes in docs folder</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="lang-hu" style="display:none;">
+                            <h3>❓ Gyakori problémák & megoldások</h3>
+                            
+                            <div class="troubleshoot-item">
+                                <h4>🔴 Adat nem töltődik be</h4>
+                                <p><strong>Lehetséges okok:</strong></p>
+                                <ul>
+                                    <li>Helytelen fájl formátum (CSV kell)</li>
+                                    <li>Rossz oszlopszám</li>
+                                    <li>Érvénytelen időbélyeg formátum</li>
+                                    <li>Hiányzó vagy sérült adatok</li>
+                                </ul>
+                                <p><strong>Megoldások:</strong></p>
+                                <ul>
+                                    <li>✓ Ellenőrizd a fájl formátumot: CSV megfelelő oszlopokkal</li>
+                                    <li>✓ Időbélyeg formátum: <code>ÉÉÉÉ-HH-NN ÓÓ:pp</code></li>
+                                    <li>✓ 15 perces felbontás végig biztosítása</li>
+                                    <li>✓ Hiányzó értékek vagy rések ellenőrzése</li>
+                                    <li>✓ Próbáld ki a demo adatokat hogy az alkalmazás működik</li>
+                                </ul>
+                            </div>
+                            
+                            <div class="troubleshoot-item">
+                                <h4>🔴 Grafikonok nem frissülnek</h4>
+                                <p><strong>Megoldások:</strong></p>
+                                <ul>
+                                    <li>✓ Kattints <strong>"Apply Range"</strong>-re dátum változtatás után</li>
+                                    <li>✓ Futtasd a szimulációt paraméter változtatás után</li>
+                                    <li>✓ Frissítsd a böngészőt ha grafikonok lefagytak (F5)</li>
+                                    <li>✓ Ellenőrizd a böngésző konzolt hibákért (F12)</li>
+                                </ul>
+                            </div>
+                            
+                            <div class="troubleshoot-item">
+                                <h4>🔴 Szimuláció túl lassú</h4>
+                                <p><strong>Ez normális ilyenkor:</strong></p>
+                                <ul>
+                                    <li>Nagy adathalmazok (>1 év 5-10 másodpercet vehet igénybe)</li>
+                                    <li>Első szimuláció adatok betöltése után</li>
+                                </ul>
+                                <p><strong>Megoldások:</strong></p>
+                                <ul>
+                                    <li>✓ Csökkentsd az időtartományt gyorsabb számításhoz</li>
+                                    <li>✓ Légy türelmes nagy adathalmazoknál</li>
+                                    <li>✓ Ellenőrizd a böngésző konzolt hibákért (F12)</li>
+                                </ul>
+                            </div>
+                            
+                            <div class="troubleshoot-item">
+                                <h4>🔴 Váratlan vagy irreális eredmények</h4>
+                                <p><strong>Ellenőrizd ezeket a beállításokat:</strong></p>
+                                <ul>
+                                    <li>✓ Az akkumulátor paraméterek reálisak</li>
+                                    <li>✓ Kapacitás > 0</li>
+                                    <li>✓ Hatékonyság értékek 80-100% között</li>
+                                    <li>✓ Min SOC < Max SOC</li>
+                                    <li>✓ Töltési/kisütési sebesség megfelelő az akkumulátor méretéhez</li>
+                                    <li>✓ Próbáld ki a demo adatokat hogy az alkalmazás jól működik</li>
+                                </ul>
+                            </div>
+                            
+                            <hr style="margin: 30px 0;">
+                            
+                            <h3>💻 Böngésző kompatibilitás</h3>
+                            <div class="browser-compat">
+                                <p><strong>Támogatott böngészők:</strong></p>
+                                <ul>
+                                    <li>✅ Chrome (legfrissebb verzió)</li>
+                                    <li>✅ Firefox (legfrissebb verzió)</li>
+                                    <li>✅ Microsoft Edge (legfrissebb verzió)</li>
+                                    <li>✅ Safari 14+</li>
+                                    <li>❌ Internet Explorer (nem támogatott)</li>
+                                </ul>
+                                <p><strong>Követelmények:</strong></p>
+                                <ul>
+                                    <li>JavaScript engedélyezve kell legyen</li>
+                                    <li>Cookies/LocalStorage engedélyezve (preferenciákhoz)</li>
+                                    <li>Modern böngésző HTML5 támogatással</li>
+                                </ul>
+                            </div>
+                            
+                            <hr style="margin: 30px 0;">
+                            
+                            <h3>📚 További segítség?</h3>
+                            <p><em>Megjegyzés: Ez egy hobbi projektként készült. Nem vagyok aktív mint fejlesztő, de bátran fedezd fel és módosítsd a kódot.</em></p>
+                            <ul>
+                                <li>📧 <strong>Dokumentáció:</strong> README.md részletes műszaki információkért</li>
+                                <li>🐛 <strong>Hibajelentések:</strong> GitHub repository-ban jelenthetsz be hibákat</li>
+                                <li>💡 <strong>Funkció javaslatok:</strong> Javaslataidat várjuk szívesen!</li>
+                                <li>🔧 <strong>Fejlesztés:</strong> Implementációs jegyzeteket a docs mappában találod</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script src="js/csv_handler.js"></script>
     <script src="js/data_merger.js"></script>
     <script src="js/visualizer.js"></script>
     <script src="js/simulation.js"></script>
+    <script src="js/help_modal.js"></script>
     <script src="js/app.js"></script>
     <script>
         const version = 'v1.0.0';
