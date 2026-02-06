@@ -350,7 +350,7 @@ const Visualizer = {
             y: reductions,
             name: metricLabel,
             type: 'scatter',
-            mode: 'lines+markers',
+            mode: 'lines+markers+text',    // Added 'text' to show labels
             line: {
                 color: '#a855f7',           // Purple/violet
                 width: 3,
@@ -360,11 +360,17 @@ const Visualizer = {
                 size: 10,
                 color: '#a855f7',
                 line: {
-                    color: '#1e293b',       // Dark outline for contrast
+                    color: '#ffffff',       // White outline for better visibility
                     width: 2
                 }
             },
             text: hoverText,
+            textposition: 'top center',     // Position labels above markers
+            textfont: {
+                family: 'Segoe UI, Tahoma, Geneva, Verdana, sans-serif',
+                size: 11,
+                color: '#e6edf3'
+            },
             hovertemplate: 
                 '<b>Battery Size:</b> %{x} kWh<br>' +
                 '<b>' + metricLabel + ':</b> %{y:.1f}%<br>' +

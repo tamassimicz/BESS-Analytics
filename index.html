@@ -615,10 +615,10 @@
                             
                             <div class="param-explain">
                                 <h4>Inverter Mode</h4>
-                                <p>How the system handles simultaneous import and export. It has role in the simulation logic.</p>
+                                <p>How the system handles simultaneous import and export processes. Relevant for simulation logic.</p>
                                 <ul>
-                                    <li><strong>Asymmetric (Instant "Netting of import/export"):</strong> Recommended for most systems, modern hybrid inverters</li>
-                                    <li><strong>Symmetric:</strong> For separate import/export handling, modeling older inverters</li>
+                                    <li><strong>Asymmetric (Instantaneous "Netting" between import/export):</strong> Recommended for most systems, modern hybrid inverters</li>
+                                    <li><strong>Symmetric:</strong> Separate import/export handling, for modeling older inverters</li>
                                     <li>See <em>"Key Concepts"</em> tab for detailed explanation</li>
                                 </ul>
                             </div>
@@ -814,7 +814,7 @@
                                 <h4>Hálózati export csökkenés</h4>
                                 <p>Mennyi napelemes energiát tárol az akkumulátor hálózatba táplálás helyett.</p>
                                 <ul>
-                                    <li>Fontos nettó elszámolásos esetekben</li>
+                                    <li>Fontos bruttó elszámolásos esetekben</li>
                                     <li>Többlet napenergiát későbbi használatra tárolja</li>
                                 </ul>
                             </div>
@@ -854,50 +854,63 @@
                         <div class="lang-en">
                             <h3>🔋 Inverter Mode: Symmetric vs Asymmetric</h3>
                             
+                            <p class="concept-intro"><strong>This refers to the inverter's hardware capability, not the billing method!</strong> The inverter type determines how it handles simultaneous import and export flows across phases.</p>
+                            
                             <div class="concept-box concept-highlight">
-                                <h4>Asymmetric (Net Metering) - Default ✓</h4>
-                                <p>Simulates real net-metering scenarios where the system calculates net energy flow.</p>
+                                <h4>Asymmetric (Instantaneous "Netting" between import/export) - Default ✓</h4>
+                                <p>Modern hybrid inverters that can dynamically distribute production across phases optimally upto the instantaneous total solar power.</p>
                                 
                                 <strong>How it works:</strong>
                                 <ul>
-                                    <li>Calculates: <code>Net = Production - Consumption</code></li>
-                                    <li>Battery charges/discharges based on NET flow</li>
-                                    <li>If net is positive (surplus), battery charges</li>
-                                    <li>If net is negative (deficit), battery discharges</li>
+                                    <li>Inverter can <strong>feed different power levels to each phase</strong></li>
+                                    <li>If L1 phase measures 2 kW import, it feeds 2 kW there</li>
+                                    <li>If L2 phase measures 1 kW import, it feeds 1 kW there</li>
+                                    <li>Production dynamically adjusts to match phase-specific consumption</li>
+                                    <li>This is <strong>netting at energy flow level</strong> (not billing!)</li>
                                 </ul>
                                 
                                 <div class="example-box">
-                                    <strong>Example:</strong><br>
-                                    • Solar produces 5 kW<br>
-                                    • Consumption is 3 kW<br>
-                                    • Net = +2 kW → Battery charges from 2 kW surplus
+                                    <strong>Example for three-phase system:</strong><br>
+                                    • L1 phase: 3 kW consumption → inverter feeds 3 kW<br>
+                                    • L2 phase: 1 kW consumption → inverter feeds 1 kW<br>
+                                    • L3 phase: 0.5 kW consumption → inverter feeds 0.5 kW<br>
+                                    <strong>Result:</strong> Minimal grid import, optimal self-consumption
                                 </div>
                                 
-                                <strong>When to use:</strong>
+                                <strong>Recommended for:</strong>
                                 <ul>
-                                    <li>✓ Net-metering billing system</li>
-                                    <li>✓ Single meter for import/export</li>
-                                    <li>✓ Most common residential scenario</li>
+                                    <li>✓ Modern hybrid inverters (manufactured after 2020)</li>
+                                    <li>✓ Most residential and commercial installations</li>
+                                    <li>✓ Systems with unbalanced phase consumption</li>
                                 </ul>
                             </div>
                             
                             <div class="concept-box">
-                                <h4>Symmetric (Separate Flows)</h4>
-                                <p>Treats grid import and export as completely independent flows.</p>
+                                <h4>Symmetric (Limited phase handling)</h4>
+                                <p>Older inverters that <strong>cannot feed different power to each phase</strong>.</p>
                                 
                                 <strong>How it works:</strong>
                                 <ul>
-                                    <li>Import and export tracked separately</li>
-                                    <li>Battery charges ONLY during export periods</li>
-                                    <li>Battery discharges ONLY during import periods</li>
-                                    <li>No net calculation - separate accounting</li>
+                                    <li>Inverter feeds <strong>equal power to all phases</strong></li>
+                                    <li>Cannot adapt production to phase-specific imports</li>
+                                    <li>If one phase has surplus and another deficit, cannot compensate</li>
+                                    <li>Import and export can occur simultaneously (on different phases)</li>
                                 </ul>
+                                
+                                <div class="example-box">
+                                    <strong>Example for three-phase system:</strong><br>
+                                    • Inverter production: 3 × 1.5 kW = 4.5 kW (evenly distributed)<br>
+                                    • L1 phase: 3 kW consumption - 1.5 kW production = <span style="color:#ef4444">1.5 kW import</span><br>
+                                    • L2 phase: 1 kW consumption - 1.5 kW production = <span style="color:#22c55e">0.5 kW export</span><br>
+                                    • L3 phase: 0.5 kW consumption - 1.5 kW production = <span style="color:#22c55e">1 kW export</span><br>
+                                    <strong>Result:</strong> Simultaneous import AND export, lower efficiency
+                                </div>
                                 
                                 <strong>When to use:</strong>
                                 <ul>
-                                    <li>✓ Separate meters for import/export</li>
-                                    <li>✓ Different pricing for import vs export</li>
-                                    <li>✓ Commercial installations with complex tariffs</li>
+                                    <li>✓ Modeling older inverters (pre-2020 systems)</li>
+                                    <li>✓ If you know your inverter does NOT support asymmetric feeding</li>
+                                    <li>✓ Conservative estimates (shows lower savings)</li>
                                 </ul>
                             </div>
                             
@@ -1014,50 +1027,63 @@
                         <div class="lang-hu" style="display:none;">
                             <h3>🔋 Inverter mód: Szimmetrikus vs Aszimmetrikus</h3>
                             
+                            <p class="concept-intro"><strong>Ez az inverter hardveres képességét jelöli.</strong> Az inverter típusa határozza meg, hogyan kezeli az egyidejű import és export folyamatokat a fázisok között.</p>
+                            
                             <div class="concept-box concept-highlight">
-                                <h4>Aszimmetrikus (pillanatnyi Nettó elszámolás) - Alapértelmezett ✓</h4>
-                                <p>Valós nettó elszámolást szimulál, ahol a rendszer a nettó energia áramlást számítja.</p>
+                                <h4>Aszimmetrikus (pillanatnyi "Nettósítás" import/export között) - Alapértelmezett ✓</h4>
+                                <p>Újabb hibrid inverterek, amelyek képesek a pillanatnyi termelést optimálisan szétosztani a fázisok között.</p>
                                 
                                 <strong>Hogyan működik:</strong>
                                 <ul>
-                                    <li>Számítás: <code>Nettó = Termelés - Fogyasztás</code></li>
-                                    <li>Akkumulátor a NETTÓ áramlás alapján tölt/merül</li>
-                                    <li>Ha nettó pozitív (többlet), akkumulátor tölt</li>
-                                    <li>Ha nettó negatív (hiány), akkumulátor merül</li>
+                                    <li>Az inverter <strong>fázisonként eltérő teljesítményt</strong> tud betáplálni az összteljesítményen belül</li>
+                                    <li>Ha L1 fázison 2 kW importot mér, oda 2 kW-ot táplál be</li>
+                                    <li>Ha L2 fázison 1 kW importot mér, oda 1 kW-ot táplál be</li>
+                                    <li>A termelés dinamikusan igazodik a fázisonkénti fogyasztáshoz</li>
+                                    <li>Ez <strong>nettósítás az energia áramlás szintjén</strong> (nem költség elszámolás!)</li>
                                 </ul>
                                 
                                 <div class="example-box">
-                                    <strong>Példa:</strong><br>
-                                    • Napelem termel 5 kW-ot<br>
-                                    • Fogyasztás 3 kW<br>
-                                    • Nettó = +2 kW → Akkumulátor 2 kW többlettel tölt
+                                    <strong>Példa háromfázisú rendszerre:</strong><br>
+                                    • L1 fázis: 3 kW fogyasztás → inverter 3 kW-ot táplál be<br>
+                                    • L2 fázis: 1 kW fogyasztás → inverter 1 kW-ot táplál be<br>
+                                    • L3 fázis: 0.5 kW fogyasztás → inverter 0.5 kW-ot táplál be<br>
+                                    <strong>Eredmény:</strong> Minimális hálózati import, optimális önfogyasztás
                                 </div>
                                 
-                                <strong>Mikor használjuk:</strong>
+                                <strong>Ajánlott használat:</strong>
                                 <ul>
-                                    <li>✓ Nettó elszámolás alapú számlázás</li>
-                                    <li>✓ Egyetlen mérő import/export-hoz</li>
-                                    <li>✓ Legtöbb lakossági eset</li>
+                                    <li>✓ Újabb hibrid inverterek (2020 után gyártott rendszerek)</li>
+                                    <li>✓ Legtöbb modern lakossági és kereskedelmi telepítés</li>
+                                    <li>✓ Fázisonként eltérő fogyasztási mintákkal rendelkezők</li>
                                 </ul>
                             </div>
                             
                             <div class="concept-box">
-                                <h4>Szimmetrikus (Különálló áramlások)</h4>
-                                <p>A hálózati import és export teljesen független áramlásként kezeli.</p>
+                                <h4>Szimmetrikus (Korlátozott fázis-kezelés)</h4>
+                                <p>Régebbi inverterek, amelyek <strong>nem tudnak fázisonként eltérően betáplálni</strong>.</p>
                                 
                                 <strong>Hogyan működik:</strong>
                                 <ul>
-                                    <li>Import és export külön követve</li>
-                                    <li>Akkumulátor CSAK export időszakokban tölt</li>
-                                    <li>Akkumulátor CSAK import időszakokban merül</li>
-                                    <li>Nincs nettó számítás - külön könyvelés</li>
+                                    <li>Az inverter <strong>minden fázisra egyforma teljesítményt</strong> táplál be</li>
+                                    <li>Nem tudja a termelést a fázisonkénti importhoz igazítani</li>
+                                    <li>Ha az egyik fázison többlet, másikon hiány van, nem tud kompenzálni</li>
+                                    <li>Import és export egyszerre is előfordulhat (különböző fázisokon)</li>
                                 </ul>
+                                
+                                <div class="example-box">
+                                    <strong>Példa háromfázisú rendszerre:</strong><br>
+                                    • Inverter termelés: 3 x 1.5 kW = 4.5 kW (egyenletesen szétosztva)<br>
+                                    • L1 fázis: 3 kW fogyasztás - 1.5 kW termelés = <span style="color:#ef4444">1.5 kW import</span><br>
+                                    • L2 fázis: 1 kW fogyasztás - 1.5 kW termelés = <span style="color:#22c55e">0.5 kW export</span><br>
+                                    • L3 fázis: 0.5 kW fogyasztás - 1.5 kW termelés = <span style="color:#22c55e">1 kW export</span><br>
+                                    <strong>Eredmény:</strong> Egyidejű import ÉS export, alacsonyabb hatékonyság
+                                </div>
                                 
                                 <strong>Mikor használjuk:</strong>
                                 <ul>
-                                    <li>✓ Külön mérők import/export-hoz</li>
-                                    <li>✓ Eltérő árazás import vs export</li>
-                                    <li>✓ Kereskedelmi telepítések komplex tarifákkal</li>
+                                    <li>✓ Régebbi inverterek modellezéséhez (2020 előtti rendszerek)</li>
+                                    <li>✓ Ha biztosan tudod, hogy az invertere NEM támogatja az aszimmetrikus betáplálást</li>
+                                    <li>✓ Konzervativ becsléshez (alacsonyabb megtakarítást mutat)</li>
                                 </ul>
                             </div>
                             
