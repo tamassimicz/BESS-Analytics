@@ -145,6 +145,21 @@
             </div>
             
             <button id="btnRunBatterySimulation" class="run-simulation-btn">Run Battery Simulation</button>
+            
+            <!-- NEW: Battery Optimization Curve Button -->
+            <button id="btnRunOptimizationCurve" class="run-simulation-btn" style="margin-top: 10px;">
+                📊 Calculate Battery Optimization Curve
+            </button>
+            
+            <!-- NEW: Progress Bar -->
+            <div id="optimizationProgressContainer" style="display: none; margin-top: 10px;">
+                <div style="background: #30363d; border-radius: 8px; height: 30px; overflow: hidden; position: relative;">
+                    <div id="optimizationProgressBar" style="background: linear-gradient(90deg, #a855f7, #c084fc); height: 100%; width: 0%; transition: width 0.3s;"></div>
+                    <div id="optimizationProgressText" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: #e6edf3; font-weight: 600; font-size: 13px;">
+                        Calculating: 0/11 simulations
+                    </div>
+                </div>
+            </div>
         </div>
 
         <!-- Simulation Results Section -->
@@ -237,6 +252,27 @@
                     <button id="btnEnergyFlowEnergy" class="view-toggle-btn active">Show Solar Energy (kWh)</button>
                 </div>
                 <div id="energyFlowChartContainer" style="height: 600px; width: 100%;"></div>
+            </div>
+            
+            <!-- Battery Optimization Curve Section -->
+            <div id="optimizationCurveSection" style="display: none; margin-top: 30px;">
+                <h3 style="margin-bottom: 15px; color: var(--text-color);">
+                    Battery Optimization Curve
+                </h3>
+                
+                <!-- Metric Toggle + CSV Export -->
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                    <div class="button-group">
+                        <button id="btnOptimCurveImport" class="view-toggle-btn active">Grid Import Reduction</button>
+                        <button id="btnOptimCurveExport" class="view-toggle-btn">Grid Export Reduction</button>
+                    </div>
+                    <button id="btnExportOptimizationCSV" style="background: #2f81f7; color: white; padding: 8px 16px; border: none; border-radius: 6px; cursor: pointer; font-size: 14px; font-weight: 500;">
+                        📥 Export CSV
+                    </button>
+                </div>
+                
+                <!-- Chart Container -->
+                <div id="optimizationCurveContainer" style="height: 600px; width: 100%;"></div>
             </div>
         </div>
 

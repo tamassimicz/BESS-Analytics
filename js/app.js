@@ -16,6 +16,9 @@ const App = {
     currentSimulationResults: null,
     // Track if energy flow toggle listeners are attached
     energyFlowListenersAttached: false,
+    // Store optimization results for CSV export
+    optimizationResults: null,
+    optimizationMetricType: 'import', // 'import' | 'export'
 
     /**
      * Format number with space as thousand separator
@@ -97,6 +100,28 @@ const App = {
         const btnRunBatterySimulation = document.getElementById('btnRunBatterySimulation');
         if (btnRunBatterySimulation) {
             btnRunBatterySimulation.addEventListener('click', () => this.runBatterySimulation());
+        }
+
+        // Listen for Optimization Curve button
+        const btnRunOptimizationCurve = document.getElementById('btnRunOptimizationCurve');
+        if (btnRunOptimizationCurve) {
+            btnRunOptimizationCurve.addEventListener('click', () => this.runOptimizationCurve());
+        }
+
+        // Listen for Optimization Curve metric toggle buttons
+        const btnOptimCurveImport = document.getElementById('btnOptimCurveImport');
+        const btnOptimCurveExport = document.getElementById('btnOptimCurveExport');
+        if (btnOptimCurveImport) {
+            btnOptimCurveImport.addEventListener('click', () => this.toggleOptimizationMetric('import'));
+        }
+        if (btnOptimCurveExport) {
+            btnOptimCurveExport.addEventListener('click', () => this.toggleOptimizationMetric('export'));
+        }
+
+        // Listen for CSV Export button
+        const btnExportOptimizationCSV = document.getElementById('btnExportOptimizationCSV');
+        if (btnExportOptimizationCSV) {
+            btnExportOptimizationCSV.addEventListener('click', () => this.exportOptimizationCSV());
         }
 
         // Listen for Load Demo button
@@ -831,6 +856,210 @@ const App = {
                 viewType
             );
         }
+    },
+
+    /**
+     * Run battery optimization curve across multiple capacity values
+     */
+    runOptimizationCurve() {
+        try {
+            // 1. Validate prerequisites
+            if (!this.simulationStartDate || !this.simulationEndDate) {
+                alert('Please select a time range and click "Apply Range for Simulation" first');
+                return;
+            }
+
+            if (!this.mergedData || this.mergedData.length === 0) {
+                alert('Please load data files first');
+                return;
+            }
+
+            // 2. Filter data to simulation range
+            const startMs = new Date(this.simulationStartDate).getTime();
+            const endMs = new Date(this.simulationEndDate).getTime();
+
+            const filteredData = this.mergedData.filter(row => {
+                return row.timestampMs >= startMs && row.timestampMs <= endMs;
+            });
+
+            if (filteredData.length === 0) {
+                alert('No data in selected simulation range');
+                return;
+            }
+
+            // 3. Show progress container and disable button
+            const btn = document.getElementById('btnRunOptimizationCurve');
+            const progressContainer = document.getElementById('optimizationProgressContainer');
+            
+            btn.disabled = true;
+            btn.textContent = '⏳ Calculating...';
+            progressContainer.style.display = 'block';
+
+            // 4. Read fixed configuration (everything except capacity)
+            const fixedConfig = {
+                chargeEfficiency: parseFloat(document.getElementById('chargeEfficiency').value) / 100,
+                dischargeEfficiency: parseFloat(document.getElementById('dischargeEfficiency').value) / 100,
+                maxChargeRateKw: parseFloat(document.getElementById('maxChargeRate').value),
+                maxDischargeRateKw: parseFloat(document.getElementById('maxDischargeRate').value),
+                minSocPercent: parseFloat(document.getElementById('minSoc').value),
+                maxSocPercent: parseFloat(document.getElementById('maxSoc').value),
+                inverterMode: document.getElementById('inverterMode').value,
+                currency: document.getElementById('currency').value
+            };
+
+            // 5. Define capacity points
+            const capacityPoints = [0, 1, 2, 5, 10, 15, 20, 40, 50, 100, 200];
+            const results = [];
+
+            // 6. Run simulations sequentially with progress updates
+            let currentIndex = 0;
+
+            const runNextSimulation = () => {
+                if (currentIndex >= capacityPoints.length) {
+                    // All simulations complete
+                    this.optimizationResults = results;
+                    this.renderOptimizationCurve(results, this.optimizationMetricType);
+                    
+                    // Show results section
+                    const section = document.getElementById('optimizationCurveSection');
+                    section.style.display = 'block';
+                    section.scrollIntoView({ behavior: 'smooth' });
+
+                    // Reset button and hide progress
+                    btn.disabled = false;
+                    btn.textContent = '📊 Calculate Battery Optimization Curve';
+                    progressContainer.style.display = 'none';
+                    
+                    return;
+                }
+
+                const capacity = capacityPoints[currentIndex];
+
+                // Update config with current capacity
+                BatterySimulation.setConfig({
+                    ...fixedConfig,
+                    capacityKwh: capacity
+                });
+
+                // Run simulation
+                const simResult = BatterySimulation.simulate(filteredData);
+
+                // Store results
+                results.push({
+                    capacityKwh: capacity,
+                    gridImportReductionPercent: simResult.metrics.improvements.gridImportReductionPercent || 0,
+                    gridExportReductionPercent: simResult.metrics.improvements.gridExportReductionPercent || 0,
+                    gridImportReduction: simResult.metrics.improvements.gridImportReduction || 0,
+                    gridExportReduction: simResult.metrics.improvements.gridExportReduction || 0,
+                    totalSavings: simResult.metrics.financials.totalSavings || 0,
+                    savingsPercent: simResult.metrics.financials.savingsPercent || 0,
+                    currency: simResult.metrics.financials.currency,
+                    baselineCost: simResult.metrics.financials.baselineCost || 0,
+                    batteryCost: simResult.metrics.financials.batteryCost || 0
+                });
+
+                // Update progress
+                currentIndex++;
+                this.updateOptimizationProgress(currentIndex, capacityPoints.length);
+
+                // Schedule next simulation (allows UI to update)
+                setTimeout(runNextSimulation, 10);
+            };
+
+            // Start first simulation
+            runNextSimulation();
+
+        } catch (error) {
+            console.error('Optimization curve calculation failed:', error);
+            alert(`Error: ${error.message}`);
+            
+            // Reset UI state
+            const btn = document.getElementById('btnRunOptimizationCurve');
+            btn.disabled = false;
+            btn.textContent = '📊 Calculate Battery Optimization Curve';
+            document.getElementById('optimizationProgressContainer').style.display = 'none';
+        }
+    },
+
+    /**
+     * Update progress bar during optimization calculation
+     */
+    updateOptimizationProgress(current, total) {
+        const percent = Math.round((current / total) * 100);
+        const progressBar = document.getElementById('optimizationProgressBar');
+        const progressText = document.getElementById('optimizationProgressText');
+
+        if (progressBar && progressText) {
+            progressBar.style.width = `${percent}%`;
+            progressText.textContent = `Calculating: ${current}/${total} simulations (${percent}%)`;
+        }
+    },
+
+    /**
+     * Render optimization curve chart
+     */
+    renderOptimizationCurve(results, metricType) {
+        // Delegate to Visualizer module
+        Visualizer.renderOptimizationCurve(results, metricType);
+    },
+
+    /**
+     * Toggle between Import and Export metric views
+     */
+    toggleOptimizationMetric(metricType) {
+        this.optimizationMetricType = metricType;
+
+        // Update button styles
+        const importBtn = document.getElementById('btnOptimCurveImport');
+        const exportBtn = document.getElementById('btnOptimCurveExport');
+
+        if (metricType === 'import') {
+            importBtn.classList.add('active');
+            exportBtn.classList.remove('active');
+        } else {
+            exportBtn.classList.add('active');
+            importBtn.classList.remove('active');
+        }
+
+        // Re-render chart if results exist
+        if (this.optimizationResults) {
+            this.renderOptimizationCurve(this.optimizationResults, metricType);
+        }
+    },
+
+    /**
+     * Export optimization results as CSV
+     */
+    exportOptimizationCSV() {
+        if (!this.optimizationResults || this.optimizationResults.length === 0) {
+            alert('No optimization data to export');
+            return;
+        }
+
+        const results = this.optimizationResults;
+        const currency = results[0].currency;
+        const currencySymbol = currency === 'HUF' ? 'Ft' : '€';
+
+        // Build CSV content
+        let csv = 'Battery Capacity (kWh),Grid Import Reduction (%),Grid Import Reduction (kWh),Grid Export Reduction (%),Grid Export Reduction (kWh),Total Savings (' + currencySymbol + '),Savings (%),Baseline Cost (' + currencySymbol + '),Battery Cost (' + currencySymbol + ')\n';
+
+        results.forEach(r => {
+            csv += `${r.capacityKwh},${r.gridImportReductionPercent.toFixed(2)},${r.gridImportReduction.toFixed(2)},${r.gridExportReductionPercent.toFixed(2)},${r.gridExportReduction.toFixed(2)},${r.totalSavings.toFixed(currency === 'HUF' ? 0 : 2)},${r.savingsPercent.toFixed(2)},${r.baselineCost.toFixed(currency === 'HUF' ? 0 : 2)},${r.batteryCost.toFixed(currency === 'HUF' ? 0 : 2)}\n`;
+        });
+
+        // Create download link
+        const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+        const link = document.createElement('a');
+        const url = URL.createObjectURL(blob);
+        
+        const timestamp = new Date().toISOString().slice(0, 10);
+        link.setAttribute('href', url);
+        link.setAttribute('download', `battery_optimization_curve_${timestamp}.csv`);
+        link.style.visibility = 'hidden';
+        
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
     }
 };
 

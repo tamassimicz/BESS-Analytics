@@ -311,5 +311,153 @@ const Visualizer = {
                 Plotly.Plots.resize('energyFlowChartContainer');
             }, 100);
         });
+    },
+
+    /**
+     * Render battery optimization curve chart
+     * @param {Array} results - Array of optimization results
+     * @param {String} metricType - 'import' or 'export'
+     */
+    renderOptimizationCurve(results, metricType = 'import') {
+        if (!results || results.length === 0) {
+            console.warn('No optimization results to render');
+            return;
+        }
+
+        // Extract data based on metric type
+        const capacities = results.map(r => r.capacityKwh);
+        const reductions = metricType === 'import' 
+            ? results.map(r => r.gridImportReductionPercent)
+            : results.map(r => r.gridExportReductionPercent);
+        const savings = results.map(r => r.totalSavings);
+        
+        const currency = results[0].currency;
+        const currencySymbol = currency === 'HUF' ? 'Ft' : '€';
+        const decimals = currency === 'HUF' ? 0 : 2;
+
+        // Build hover text with both reduction % and savings
+        const hoverText = results.map((r, i) => 
+            `${reductions[i].toFixed(1)}% / ${App.formatNumber(savings[i], decimals)} ${currencySymbol}`
+        );
+
+        // Chart title based on metric type
+        const metricLabel = metricType === 'import' ? 'Grid Import Reduction' : 'Grid Export Reduction';
+        const chartTitle = `Battery Optimization Curve - ${metricLabel} vs Battery Size`;
+
+        // Create trace
+        const trace = {
+            x: capacities,
+            y: reductions,
+            name: metricLabel,
+            type: 'scatter',
+            mode: 'lines+markers',
+            line: {
+                color: '#a855f7',           // Purple/violet
+                width: 3,
+                shape: 'spline'             // Smooth curve
+            },
+            marker: {
+                size: 10,
+                color: '#a855f7',
+                line: {
+                    color: '#1e293b',       // Dark outline for contrast
+                    width: 2
+                }
+            },
+            text: hoverText,
+            hovertemplate: 
+                '<b>Battery Size:</b> %{x} kWh<br>' +
+                '<b>' + metricLabel + ':</b> %{y:.1f}%<br>' +
+                '<b>Total Savings:</b> %{text}<br>' +
+                '<extra></extra>'
+        };
+
+        // Layout configuration
+        const layout = {
+            title: {
+                text: chartTitle,
+                font: { 
+                    color: '#e6edf3', 
+                    size: 18 
+                }
+            },
+            paper_bgcolor: 'rgba(0,0,0,0)',
+            plot_bgcolor: 'rgba(0,0,0,0)',
+            template: 'plotly_dark',
+            xaxis: {
+                title: 'Battery Capacity (kWh)',
+                gridcolor: '#495057',
+                tickfont: { color: '#cbd5e1' },
+                titlefont: { color: '#e6edf3' },
+                type: 'linear',
+                dtick: 20                   // Spacing between ticks
+            },
+            yaxis: {
+                title: metricLabel + ' (%)',
+                gridcolor: '#495057',
+                tickfont: { color: '#cbd5e1' },
+                titlefont: { color: '#e6edf3' },
+                range: [0, Math.max(...reductions) * 1.15],  // Auto-scale with 15% padding
+                zeroline: true,
+                zerolinecolor: '#495057',
+                zerolinewidth: 1
+            },
+            margin: { t: 80, b: 60, l: 70, r: 40 },
+            hovermode: 'closest',
+            hoverlabel: {
+                bgcolor: '#1e293b',
+                bordercolor: '#a855f7',
+                font: {
+                    family: 'Segoe UI, Tahoma, Geneva, Verdana, sans-serif',
+                    size: 14,
+                    color: '#e6edf3'
+                }
+            },
+            annotations: [
+                // Annotation for 0 kWh baseline
+                {
+                    x: 0,
+                    y: 0,
+                    text: 'No Battery<br>(Baseline)',
+                    showarrow: true,
+                    arrowhead: 2,
+                    arrowsize: 1,
+                    arrowwidth: 2,
+                    arrowcolor: '#cbd5e1',
+                    ax: 30,
+                    ay: -40,
+                    font: {
+                        size: 11,
+                        color: '#cbd5e1'
+                    },
+                    bgcolor: '#1e293b',
+                    bordercolor: '#495057',
+                    borderwidth: 1,
+                    borderpad: 4
+                }
+            ]
+        };
+
+        const config = { 
+            responsive: true,
+            displayModeBar: true,
+            modeBarButtonsToRemove: ['lasso2d', 'select2d'],
+            toImageButtonOptions: {
+                format: 'png',
+                filename: 'battery_optimization_curve',
+                height: 600,
+                width: 1200,
+                scale: 2
+            }
+        };
+
+        // Render chart
+        Plotly.newPlot('optimizationCurveContainer', [trace], layout, config)
+            .then(() => {
+                // Force resize to ensure proper width (consistent with other charts)
+                setTimeout(() => {
+                    Plotly.Plots.resize('optimizationCurveContainer');
+                }, 100);
+            });
     }
 };
