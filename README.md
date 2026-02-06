@@ -41,7 +41,7 @@
 
 ### 🚀 Live Demo
 
-**[Try BEES Analytics Now →](https://sztistvan.github.io/BEES_Analytics/)**
+**[Try BEES Analytics Now →](https://sztistvan.github.io/BESS-Analytics/)**
 
 No installation needed - just open in your browser!
 
