@@ -1076,3 +1076,57 @@ footer {
 .modal-body::-webkit-scrollbar-thumb:hover {
     background: var(--accent-color);
 }
+
+/* ========================================
+   TIER1 LIMIT & TECHNICAL DETAILS STYLES
+   ======================================== */
+
+/* Technical details collapsible section */
+.technical-details {
+    margin-top: 15px;
+    padding: 15px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 6px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.technical-details summary {
+    cursor: pointer;
+    font-weight: 600;
+    user-select: none;
+    transition: color 0.2s;
+    outline: none;
+}
+
+.technical-details summary:hover {
+    color: #4CAF50;
+}
+
+.technical-details[open] summary {
+    margin-bottom: 15px;
+    color: var(--accent-color);
+}
+
+.technical-details code {
+    display: block;
+    background: rgba(0, 0, 0, 0.4);
+    padding: 10px;
+    border-radius: 4px;
+    font-family: 'Courier New', 'Consolas', 'Monaco', monospace;
+    font-size: 0.9em;
+    margin-top: 8px;
+    overflow-x: auto;
+    color: #58a6ff;
+}
+
+/* Info text styling for tier1 limit display */
+.info-text {
+    font-size: 0.9em;
+    color: #a0a0a0;
+    font-style: italic;
+    text-align: center;
+    margin-top: 15px;
+    padding: 10px;
+    background: rgba(255, 255, 255, 0.02);
+    border-radius: 4px;
+}

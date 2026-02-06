@@ -151,7 +151,7 @@
         <div id="simulationResults" style="margin-top: 30px; display: none;">
             <h3>📊 Simulation Results</h3>
             
-            <!-- KPI Cards -->
+            <!-- Energy KPI Cards -->
             <div class="kpi-cards">
                 <div class="kpi-card kpi-success">
                     <div class="kpi-label">Grid Import Reduction</div>
@@ -176,7 +176,10 @@
                     <div class="kpi-value" id="kpiBatteryLosses">0 kWh</div>
                     <div class="kpi-subtitle" id="kpiLossPercent">0%</div>
                 </div>
-                
+            </div>
+            
+            <!-- Financial KPI Cards -->
+            <div class="kpi-cards" style="margin-top: 20px;">
                 <div class="kpi-card kpi-financial">
                     <div class="kpi-label">Baseline Cost</div>
                     <div class="kpi-value" id="kpiBaselineCost">0 Ft</div>
@@ -195,6 +198,9 @@
                     <div class="kpi-subtitle" id="kpiSavingsPercent">0%</div>
                 </div>
             </div>
+            
+            <!-- Tier1 Limit Info -->
+            <div id="tier1LimitInfo" class="info-text" style="text-align: center; margin-top: 15px; color: #a0a0a0; font-size: 0.9em;"></div>
             
             <!-- Solar Self-Consumption Comparison -->
             <div class="solar-comparison">
@@ -416,7 +422,7 @@
                             <h4>Navigation Arrows (← →)</h4>
                             <ul>
                                 <li>Use <strong>arrow buttons</strong> to move forward/backward by the selected interval</li>
-                                <li>Example: If "Week" is selected, arrows jump by 7 days</li>
+                                <li>Example: If "Week" is selected, arrows jump by 7 days, Monday is the start of the week</li>
                             </ul>
                             
                             <div class="info-box">
@@ -476,7 +482,7 @@
                             <h4>Navigációs nyilak (← →)</h4>
                             <ul>
                                 <li>Használd a <strong>nyíl gombokat</strong> előre/hátra lépéshez a kiválasztott intervallum szerint</li>
-                                <li>Példa: Ha "Week" van kiválasztva, a nyilak 7 nappal lépnek</li>
+                                <li>Példa: Ha "Week" van kiválasztva, a nyilak 7 nappal lépnek, hétfő a hét kezdete</li>
                             </ul>
                             
                             <div class="info-box">
@@ -561,12 +567,12 @@
                                 </ul>
                             </div>
                             
- <div class="param-explain">
+                            <div class="param-explain">
                                 <h4>Inverter Mode</h4>
-                                <p>How the system handles simultaneous import and export.</p>
+                                <p>How the system handles simultaneous import and export. It has role in the simulation logic.</p>
                                 <ul>
-                                    <li><strong>Asymmetric (Net Metering):</strong> Recommended for most systems, modern hybrid inverters</li>
-                                    <li><strong>Symmetric:</strong> For separate import/export pricing, modeling older inverters</li>
+                                    <li><strong>Asymmetric (Instant "Netting of import/export"):</strong> Recommended for most systems, modern hybrid inverters</li>
+                                    <li><strong>Symmetric:</strong> For separate import/export handling, modeling older inverters</li>
                                     <li>See <em>"Key Concepts"</em> tab for detailed explanation</li>
                                 </ul>
                             </div>
@@ -616,10 +622,10 @@
                             
                             <div class="param-explain">
                                 <h4>Inverter mód</h4>
-                                <p>Hogyan kezeli a rendszer az egyidejű import és export folyamatokat.</p>
+                                <p>Hogyan kezeli a rendszer az egyidejű import és export folyamatokat. A szimulációban kap szerepet. </p>
                                 <ul>
-                                    <li><strong>Aszimmetrikus (Nettó elszámolás):</strong> Ajánlott legtöbb rendszerhez, az újabb hibrid inverterek</li>
-                                    <li><strong>Szimmetrikus:</strong> Külön import/export árazáshoz, régebbi inverterek modellezéséhez</li>
+                                    <li><strong>Aszimmetrikus (pillanatnyi "Nettósítás" import/export között):</strong> Ajánlott legtöbb rendszerhez, az újabb hibrid inverterek</li>
+                                    <li><strong>Szimmetrikus:</strong> Külön import/export kezelés, régebbi inverterek modellezéséhez</li>
                                     <li>Lásd <em>"Fogalmak"</em> fület részletes magyarázatért</li>
                                 </ul>
                             </div>
@@ -882,6 +888,48 @@
                                 </ul>
                             </div>
                             
+                            <div class="term-definition">
+                                <h4>Tier1 Import Limit (Progressive Pricing)</h4>
+                                <p>Annual electricity quota with preferential pricing for grid imports.</p>
+                                <ul>
+                                    <li><strong>Tier1 (Discounted):</strong> First 2,523 kWh/year at lower rate (e.g., 36 HUF/kWh)</li>
+                                    <li><strong>Tier2 (Market):</strong> Imports above limit at higher rate (e.g., 70 HUF/kWh)</li>
+                                    <li><strong>Automatic adjustment:</strong> For partial-year simulations, limit is scaled proportionally</li>
+                                    <li><strong>Example:</strong> 3-month simulation → 2,523 × (90/365) ≈ 622 kWh Tier1 limit</li>
+                                </ul>
+                                <div class="example-box" style="margin-top: 10px; padding: 10px; background: rgba(76, 175, 80, 0.1); border-left: 3px solid #4CAF50; border-radius: 3px;">
+                                    <strong>💡 Practical Example:</strong><br>
+                                    • Annual limit: 2,523 kWh<br>
+                                    • 30-day simulation: 2,523 × (30/365) ≈ 207 kWh<br>
+                                    • First 207 kWh imported at Tier1 price, excess at Tier2 price
+                                </div>
+                                
+                                <details class="technical-details">
+                                    <summary style="cursor: pointer; font-weight: 600; margin-top: 10px;">📐 Detailed Calculation Method ▼</summary>
+                                    <div style="margin-top: 10px; padding-left: 15px;">
+                                        <p><strong>Duration calculation:</strong></p>
+                                        <code style="display: block; background: rgba(0, 0, 0, 0.3); padding: 8px; border-radius: 3px; font-family: 'Courier New', monospace; font-size: 0.9em; margin-top: 5px;">durationDays = (endDate - startDate) / (1000 × 60 × 60 × 24)</code>
+                                        
+                                        <p style="margin-top: 10px;"><strong>Proportional limit calculation:</strong></p>
+                                        <code style="display: block; background: rgba(0, 0, 0, 0.3); padding: 8px; border-radius: 3px; font-family: 'Courier New', monospace; font-size: 0.9em; margin-top: 5px;">proportionalLimit = (durationDays / 365) × 2,523 kWh</code>
+                                        
+                                        <p style="margin-top: 10px;"><strong>Cumulative import tracking:</strong></p>
+                                        <ul style="margin-top: 5px;">
+                                            <li>Import is summed across all 15-minute intervals</li>
+                                            <li>When cumulative import reaches limit → switch to Tier2 price</li>
+                                            <li>Boundary-crossing interval is split: Tier1 portion + Tier2 portion</li>
+                                        </ul>
+                                        
+                                        <p style="margin-top: 10px;"><strong>Edge cases:</strong></p>
+                                        <ul>
+                                            <li><strong>Missing data:</strong> Actual time span between timestamps is used, not row count</li>
+                                            <li><strong>Sub-day periods:</strong> Formula still works (e.g., 12 hours → 2,523 × 0.5/365 ≈ 3.5 kWh)</li>
+                                            <li><strong>Baseline reference:</strong> Baseline always uses original full dataset, only the evaluated period's limit is adjusted</li>
+                                        </ul>
+                                    </div>
+                                </details>
+                            </div>
+                            
                             <hr style="margin: 30px 0;">
                             
                             <h3>🔌 Technical Terms</h3>
@@ -921,7 +969,7 @@
                             <h3>🔋 Inverter mód: Szimmetrikus vs Aszimmetrikus</h3>
                             
                             <div class="concept-box concept-highlight">
-                                <h4>Aszimmetrikus (Nettó elszámolás) - Alapértelmezett ✓</h4>
+                                <h4>Aszimmetrikus (pillanatnyi Nettó elszámolás) - Alapértelmezett ✓</h4>
                                 <p>Valós nettó elszámolást szimulál, ahol a rendszer a nettó energia áramlást számítja.</p>
                                 
                                 <strong>Hogyan működik:</strong>
@@ -998,6 +1046,48 @@
                                     <li>Gyakran alacsonyabb díjazás mint a vásárlási ár</li>
                                     <li>Akkumulátor tárolhatja export helyett</li>
                                 </ul>
+                            </div>
+                            
+                            <div class="term-definition">
+                                <h4>Tier1 Import Limit (Kedvezményes Sávhatár)</h4>
+                                <p>Az éves villamosenergia kvóta, amelyen belül kedvezményes árú elektromosságot vásárolhatsz a hálózatról.</p>
+                                <ul>
+                                    <li><strong>Tier1 (Kedvezményes):</strong> Az első 2523 kWh/év import alacsonyabb áron (pl. 36 Ft/kWh)</li>
+                                    <li><strong>Tier2 (Piaci):</strong> A limit feletti import magasabb áron (pl. 70 Ft/kWh)</li>
+                                    <li><strong>Automatikus arányosítás:</strong> Rövid időszakra (pl. 1 hónap, 1 hét) a rendszer automatikusan arányosítja a limitet</li>
+                                    <li><strong>Példa:</strong> 3 hónap szimuláció → 2523 × (90/365) ≈ 622 kWh Tier1 limit</li>
+                                </ul>
+                                <div class="example-box" style="margin-top: 10px; padding: 10px; background: rgba(76, 175, 80, 0.1); border-left: 3px solid #4CAF50; border-radius: 3px;">
+                                    <strong>💡 Gyakorlati példa:</strong><br>
+                                    • Éves limit: 2523 kWh<br>
+                                    • 30 napos szimuláció: 2523 × (30/365) ≈ 207 kWh<br>
+                                    • Első 207 kWh import Tier1 áron, az azt meghaladó Tier2 áron
+                                </div>
+                                
+                                <details class="technical-details">
+                                    <summary style="cursor: pointer; font-weight: 600; margin-top: 10px;">📐 Részletes számítási módszer ▼</summary>
+                                    <div style="margin-top: 10px; padding-left: 15px;">
+                                        <p><strong>Időtartam számítás:</strong></p>
+                                        <code style="display: block; background: rgba(0, 0, 0, 0.3); padding: 8px; border-radius: 3px; font-family: 'Courier New', monospace; font-size: 0.9em; margin-top: 5px;">durationDays = (endDate - startDate) / (1000 × 60 × 60 × 24)</code>
+                                        
+                                        <p style="margin-top: 10px;"><strong>Arányos limit számítás:</strong></p>
+                                        <code style="display: block; background: rgba(0, 0, 0, 0.3); padding: 8px; border-radius: 3px; font-family: 'Courier New', monospace; font-size: 0.9em; margin-top: 5px;">proportionalLimit = (durationDays / 365) × 2523 kWh</code>
+                                        
+                                        <p style="margin-top: 10px;"><strong>Kumulatív import követés:</strong></p>
+                                        <ul style="margin-top: 5px;">
+                                            <li>Minden 15 perces intervallumon keresztül összesítjük az importot</li>
+                                            <li>Amikor a kumulatív import eléri a limitet → átváltás Tier2 árra</li>
+                                            <li>A határátlépő intervallum kettéosztva: Tier1 + Tier2 részre</li>
+                                        </ul>
+                                        
+                                        <p style="margin-top: 10px;"><strong>Edge case-ek:</strong></p>
+                                        <ul>
+                                            <li><strong>Hiányos adatok:</strong> Az időbélyegek közötti tényleges időtartam számít, nem a sorok száma</li>
+                                            <li><strong>1 napnál rövidebb:</strong> A képlet működik (pl. 12 óra → 2523 × 0.5/365 ≈ 3.5 kWh)</li>
+                                            <li><strong>Baseline referencia:</strong> A baseline mindig az eredeti teljes adatsorra vonatkozik, csak a vizsgált időszak limitje változik</li>
+                                        </ul>
+                                    </div>
+                                </details>
                             </div>
                             
                             <hr style="margin: 30px 0;">

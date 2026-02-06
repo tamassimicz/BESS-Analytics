@@ -14,6 +14,20 @@ const App = {
     simulationEndDate: null,
 
     /**
+     * Format number with space as thousand separator
+     * @param {number} value - Number to format
+     * @param {number} decimals - Number of decimal places
+     * @returns {string} Formatted number string
+     */
+    formatNumber(value, decimals = 0) {
+        const fixed = value.toFixed(decimals);
+        const parts = fixed.split('.');
+        // Add space as thousand separator
+        parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
+        return parts.join('.');
+    },
+
+    /**
      * Initializes the application by attaching event listeners.
      */
     init() {
@@ -604,15 +618,25 @@ const App = {
         const decimals = financials.currency === 'HUF' ? 0 : 2;
 
         document.getElementById('kpiBaselineCost').textContent = 
-            `${financials.baselineCost.toFixed(decimals)} ${currencySymbol}`;
+            `${this.formatNumber(financials.baselineCost, decimals)} ${currencySymbol}`;
         
         document.getElementById('kpiBatteryCost').textContent = 
-            `${financials.batteryCost.toFixed(decimals)} ${currencySymbol}`;
+            `${this.formatNumber(financials.batteryCost, decimals)} ${currencySymbol}`;
         
         document.getElementById('kpiTotalSavings').textContent = 
-            `${financials.totalSavings.toFixed(decimals)} ${currencySymbol}`;
+            `${this.formatNumber(financials.totalSavings, decimals)} ${currencySymbol}`;
         document.getElementById('kpiSavingsPercent').textContent = 
             `${financials.savingsPercent.toFixed(1)}%`;
+        
+        // Display tier1 limit information
+        const tier1LimitEl = document.getElementById('tier1LimitInfo');
+        if (tier1LimitEl && financials.proportionalTier1Limit !== undefined) {
+            const limitFormatted = this.formatNumber(financials.proportionalTier1Limit, 0);
+            const daysFormatted = Math.round(financials.durationDays);
+            tier1LimitEl.textContent = 
+                `Applied Tier1 Limit: ${limitFormatted} kWh (${daysFormatted} days) | ` +
+                `Alkalmazott Tier1 limit: ${limitFormatted} kWh (${daysFormatted} nap)`;
+        }
 
         // Update comparison cards
         document.getElementById('beforeSelfConsumption').textContent = 
@@ -637,24 +661,38 @@ const App = {
     renderComparisonChart(metrics) {
         const { before, after } = metrics;
 
+        const categories = ['Grid Import', 'Grid Export', 'Battery Self-Consumption', 'Solar Self-Consumption'];
+        const beforeValues = [before.gridImport, before.gridExport, before.batterySelfConsumption, before.solarSelfConsumption];
+        const afterValues = [after.gridImport, after.gridExport, after.batterySelfConsumption, after.solarSelfConsumption];
+
         const trace1 = {
-            x: ['Grid Import', 'Grid Export', 'Solar Self-Consumption'],
-            y: [before.gridImport, before.gridExport, before.solarSelfConsumption],
+            x: categories,
+            y: beforeValues,
             name: 'Before (No Battery)',
             type: 'bar',
             marker: {
                 color: '#6b7280'
-            }
+            },
+            hovertemplate: '<b>%{x}</b><br>' +
+                           'Before: %{y:.2f} kWh<br>' +
+                           'After: %{customdata:.2f} kWh<br>' +
+                           '<extra></extra>',
+            customdata: afterValues
         };
 
         const trace2 = {
-            x: ['Grid Import', 'Grid Export', 'Solar Self-Consumption'],
-            y: [after.gridImport, after.gridExport, after.solarSelfConsumption],
+            x: categories,
+            y: afterValues,
             name: 'After (With Battery)',
             type: 'bar',
             marker: {
                 color: '#2f81f7'
-            }
+            },
+            hovertemplate: '<b>%{x}</b><br>' +
+                           'Before: %{customdata:.2f} kWh<br>' +
+                           'After: %{y:.2f} kWh<br>' +
+                           '<extra></extra>',
+            customdata: beforeValues
         };
 
         const layout = {
@@ -663,6 +701,8 @@ const App = {
             template: 'plotly_dark',
             paper_bgcolor: '#161b22',
             plot_bgcolor: '#161b22',
+            width: 1200,
+            height: 500,
             xaxis: {
                 title: 'Energy Flow Category',
                 gridcolor: '#495057',

@@ -55,7 +55,12 @@ const BatterySimulation = {
                 const netBalance = point.exportKwh - point.importKwh;
                 
                 if (netBalance > 0) {
-                    // Surplus available - Charge battery
+                    // Surplus available - Inverter nets import to zero, then charge battery from remaining export
+                    // Inverter-level netting happens FIRST, independent of battery
+                    gridImportWithBattery = 0;
+                    gridExportWithBattery = netBalance;
+                    
+                    // Now try to charge battery from the remaining export
                     const chargeRequest = Math.min(netBalance, this.config.maxChargeRateKw * 0.25);
                     const maxChargeKwh = (this.config.maxSocPercent / 100 * this.config.capacityKwh) - socKwh;
                     const actualCharge = Math.min(chargeRequest, Math.max(0, maxChargeKwh));
@@ -65,14 +70,19 @@ const BatterySimulation = {
                         socKwh += energyStored;
                         const chargeLoss = actualCharge - energyStored;
                         
-                        gridImportWithBattery = point.importKwh;
-                        gridExportWithBattery = point.exportKwh - actualCharge;
+                        // Further reduce export by what battery absorbed
+                        gridExportWithBattery = netBalance - actualCharge;
                         batteryChargeKw = actualCharge / 0.25;
                         batteryDischargeKw = 0;
                         batteryLossKw = chargeLoss / 0.25;
                     }
                 } else if (netBalance < 0) {
-                    // Deficit to cover - Discharge battery
+                    // Deficit to cover - Inverter nets export to zero, then discharge battery to reduce remaining import
+                    // Inverter-level netting happens FIRST, independent of battery
+                    gridExportWithBattery = 0;
+                    gridImportWithBattery = Math.abs(netBalance);
+                    
+                    // Now try to discharge battery to offset the remaining import
                     const dischargeRequest = Math.min(Math.abs(netBalance), this.config.maxDischargeRateKw * 0.25);
                     const availableDischargeKwh = socKwh - (this.config.minSocPercent / 100 * this.config.capacityKwh);
                     const actualDischarge = Math.min(dischargeRequest, Math.max(0, availableDischargeKwh));
@@ -82,8 +92,8 @@ const BatterySimulation = {
                         socKwh -= actualDischarge;
                         const dischargeLoss = actualDischarge - energyDelivered;
                         
-                        gridImportWithBattery = point.importKwh - energyDelivered;
-                        gridExportWithBattery = point.exportKwh;
+                        // Further reduce import by what battery provided
+                        gridImportWithBattery = Math.abs(netBalance) - energyDelivered;
                         batteryDischargeKw = actualDischarge / 0.25;
                         batteryChargeKw = 0;
                         batteryLossKw = dischargeLoss / 0.25;
@@ -91,8 +101,8 @@ const BatterySimulation = {
                 }
             } else {
                 // Symmetric Mode: Separate charge/discharge logic
-                if (point.exportKwh > 0 && point.importKwh === 0) {
-                    // Surplus available for charging
+                if (point.exportKwh > 0) {
+                    // Surplus available for charging, any export can be used to charge the battery
                     const chargeRequest = Math.min(point.exportKwh, this.config.maxChargeRateKw * 0.25);
                     const maxChargeKwh = (this.config.maxSocPercent / 100 * this.config.capacityKwh) - socKwh;
                     const actualCharge = Math.min(chargeRequest, Math.max(0, maxChargeKwh));
@@ -108,8 +118,8 @@ const BatterySimulation = {
                         batteryDischargeKw = 0;
                         batteryLossKw = chargeLoss / 0.25;
                     }
-                } else if (point.importKwh > 0 && point.exportKwh === 0) {
-                    // Deficit to be covered
+                } else if (point.importKwh > 0) {
+                    // Deficit to be covered by discharging, any import can be offset by discharging the battery, but not that time when there is export, because in symmetric mode they are separated
                     const dischargeRequest = Math.min(point.importKwh, this.config.maxDischargeRateKw * 0.25);
                     const availableDischargeKwh = socKwh - (this.config.minSocPercent / 100 * this.config.capacityKwh);
                     const actualDischarge = Math.min(dischargeRequest, Math.max(0, availableDischargeKwh));
@@ -258,10 +268,23 @@ const BatterySimulation = {
      */
     calculateFinancialSavings(data, baselineMetrics, simulatedMetrics) {
         const prices = this.config.pricing[this.config.currency];
-        const tier1Limit = prices.tier1LimitKwh;
-        const tier1Price = prices.tier1PricePerKwh;
-        const tier2Price = prices.tier2PricePerKwh;
-        const exportPrice = prices.exportPricePerKwh;
+        
+        // Calculate simulation timespan from dataset
+        const startDate = new Date(data[0].timestamp);
+        const endDate = new Date(data[data.length - 1].timestamp);
+        const durationMs = endDate - startDate;
+        const durationDays = durationMs / (1000 * 60 * 60 * 24);
+        
+        // Calculate proportional tier1 limit based on simulation duration
+        // Annual limit is scaled by (durationDays / 365) to fairly represent shorter periods
+        const annualTier1Limit = prices.tier1LimitKwh; // e.g., 2523 kWh for full year
+        const proportionalTier1Limit = (durationDays / 365) * annualTier1Limit;
+        const tier1Limit = proportionalTier1Limit; // Use proportional limit in calculations
+        
+        // Fix: Use correct property names from config
+        const tier1Price = prices.tier1ImportPrice;
+        const tier2Price = prices.tier2ImportPrice;
+        const exportPrice = prices.exportPrice;
 
         // Helper function to calculate cost with tier boundaries
         const calculateCost = (gridImportPerInterval, gridExportPerInterval) => {
@@ -319,7 +342,10 @@ const BatterySimulation = {
             batteryCost: batteryCost,
             totalSavings: totalSavings,
             savingsPercent: savingsPercent,
-            currency: this.config.currency
+            currency: this.config.currency,
+            durationDays: durationDays,
+            proportionalTier1Limit: proportionalTier1Limit,
+            annualTier1Limit: annualTier1Limit
         };
     },
 
