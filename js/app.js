@@ -13,8 +13,12 @@ function setLanguage(lang) {
   });
 }
 
-document.addEventListener('DOMContentLoaded', () => {
-  setLanguage('hu');   // 👈 itt állítod be az alapértelmezett nyelvet
+// Globálisan elérhetővé tesszük (hogy más modulok is tudják hívni)
+window.setLanguage = setLanguage;
+
+// Biztosan a legvégén fusson le (miután a többi script is lefutott)
+window.addEventListener('load', () => {
+  setLanguage('hu');
 });
 
 
