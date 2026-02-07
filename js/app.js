@@ -2,6 +2,22 @@
  * Main Application Logic
  * Coordinates data loading, merging, and UI updates.
  */
+
+function setLanguage(lang) {
+  document.querySelectorAll('.lang-en').forEach(el => {
+    el.style.display = (lang === 'en') ? 'block' : 'none';
+  });
+
+  document.querySelectorAll('.lang-hu').forEach(el => {
+    el.style.display = (lang === 'hu') ? 'block' : 'none';
+  });
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  setLanguage('hu');   // 👈 itt állítod be az alapértelmezett nyelvet
+});
+
+
 const App = {
     solarData: [],
     gridData: [],
